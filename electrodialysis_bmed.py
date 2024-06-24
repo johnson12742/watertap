@@ -10,7 +10,6 @@
 # "https://github.com/watertap-org/watertap/"
 #################################################################################
 import math
-import numpy as np
 
 # Import Pyomo libraries
 from pyomo.environ import (
@@ -51,7 +50,7 @@ from enum import Enum
 from watertap.core import ControlVolume0DBlock, InitializationMixin
 from watertap.costing.unit_models.electrodialysis import cost_electrodialysis
 
-__author__ = " Xiangyu Bi, Austin Ladshaw, Kejia Hu"
+__author__ = " Johnson Dhanasekaran"
 
 _log = idaeslog.getLogger(__name__)
 
@@ -97,10 +96,10 @@ class HydraulicDiameterMethod(Enum):
 
 
 # Name of the unit model
-@declare_process_block_class("Electrodialysis0D")
+@declare_process_block_class("BiPolarElectrodialysis0D")
 class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
     """
-    0D Electrodialysis Model
+    0D BiPolarElectrodialysis Model
     """
 
     # CONFIG are options for the unit model
@@ -220,9 +219,8 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
        .. csv-table::
            :header: "Configuration Options", "Description"
 
-           "``LimitingCurrentDensityMethod.InitialValue``", "Limiting current is calculated from a single initial value of the feed solution tested by the user."
-           "``LimitingCurrentDensityMethod.Empirical``", "Limiting current density is caculated from the empirical equation: TODO"
-           "``LimitingCurrentDensityMethod.Theoretical``", "Limiting current density is calculated from a theoretical equation: TODO"
+           "``LimitingCurrentDensityMethod.InitialValue``", "Limiting current is calculated from a single initial value given by the user."
+           "``LimitingCurrentDensityMethod.Empirical``", "Limiting current density is calculated from the empirical equation"
        """,
         ),
     )
@@ -238,7 +236,7 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
            .. csv-table::
                :header: "Configuration Options", "Description"
 
-               "``LimitingOperationMode.Sub_limiting``", "Salt below limiting current. No water splitting"
+               "``LimitingOperationMode.Sub_limiting``", "Salt transport below limiting current. No water splitting"
                "``LimitingOperationMode.Over_limiting``", "Above salt limiting current. Water splitting."
            """,
         ),
@@ -256,9 +254,8 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
            .. csv-table::
                :header: "Configuration Options", "Description"
 
-               "``LimitingpotentialMethod.InitialValue``", "Limiting current is calculated from a single initial value of the feed solution tested by the user."
-               "``LimitingpotentialMethod.Empirical``", "Limiting current density is caculated from the empirical equation: TODO"
-               "``LimitingpotentialMethod.Theoretical``", "Limiting current density is calculated from a theoretical equation: TODO"
+               "``LimitingpotentialMethod.InitialValue``", "Limiting current is calculated from a initial value given by the user."
+               "``LimitingpotentialMethod.Empirical``", "Limiting current density is caculated from the empirical equation"
            """,
         ),
     )
@@ -276,24 +273,6 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
         ConfigValue(
             default=0.5,
             description="Limiting potential data input",
-        ),
-    )
-
-    # CONFIG.declare(
-    #     "has_nonohmic_potential_membrane",
-    #     ConfigValue(
-    #         default=False,
-    #         domain=Bool,
-    #         description="Configuration for whether to model the nonohmic potential across ion exchange membranes",
-    #     ),
-    # )
-
-    CONFIG.declare(
-        "has_Nernst_diffusion_layer",
-        ConfigValue(
-            default=False,
-            domain=Bool,
-            description="Configuration for whether to simulate the concentration-polarized diffusion layers",
         ),
     )
 
@@ -458,41 +437,15 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
         )
 
         # Material and Operational properties
+
         self.membrane_thickness = Var(
             self.membrane_set,
-            initialize=0.0001,
-            bounds=(1e-6, 1e-1),
+            initialize=1.3e-4,
+            bounds=(1e-8, 1e-1),
             units=pyunits.meter,
             doc="Membrane thickness",
         )
-        self.membrane_fixed_charge = Var(
-            self.membrane_set,
-            initialize=1.5e3,
-            bounds=(1e-1, 1e5),
-            units=pyunits.mole * pyunits.meter**-3,
-            doc="Membrane fixed charge",
-        )
-        self.kr = Var(
-            self.membrane_set,
-            initialize=1.33 * 10**11,
-            bounds=(1e-6, 1e16),
-            units=pyunits.L * pyunits.mole**-1 * pyunits.second**-1,
-            doc="Re-association rate constant",
-        )
-        self.kd_zero = Var(
-            self.membrane_set,
-            initialize=2 * 10**-5,
-            bounds=(1e-10, 1e2),
-            units=pyunits.second**-1,
-            doc="Dissociation rate constant at no electric field",
-        )
-        self.diffus_mass = Var(
-            self.membrane_set,
-            initialize=1e-9,
-            bounds=(1e-16, 1e-6),
-            units=pyunits.meter**2 * pyunits.second**-1,
-            doc="The mass diffusivity of the solute as molecules (not individual ions)",
-        )
+
         self.solute_diffusivity_membrane = Var(
             self.membrane_set,
             self.ion_set | self.config.property_package.solute_set,
@@ -537,15 +490,13 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
             doc="areal resistance of TWO electrode compartments of a stack",
         )
 
-        self.relative_permittivity = Var(
-            self.membrane_set,
-            initialize=20,
-            bounds=(1, 80),
-            domain=NonNegativeReals,
-            units=pyunits.dimensionless,
-            doc="Relative permittivity",
+        self.current = Var(
+            self.flowsheet().time,
+            initialize=1,
+            bounds=(-1e5, 1e5),
+            units=pyunits.amp,
+            doc="Current across a cell-pair or stack",
         )
-
         self.voltage = Var(
             self.flowsheet().time,
             initialize=5,
@@ -635,7 +586,7 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
             doc="Molar flux_out of a component across the membrane driven by non-electrical forces",
         )
 
-        # Build control volume for the dilute channel
+        # Build control volume for the aem side of the bipolar channel
         self.aem_side = ControlVolume0DBlock(
             dynamic=False,
             has_holdup=False,
@@ -696,28 +647,8 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
 
         # extension options
 
-        self.potential_lim_bpem = Var(
-            self.flowsheet().time,
-            initialize=3.6,
-            bounds=(0, 5000),
-            units=pyunits.volt,
-            doc="Potential drop across the depletion layer",
-        )
-
         if self.config.Operation_method_bpem == LimitingOperationMode.Over_limiting:
-
             self._make_limiting_operation()
-            temp = 10
-        else:
-            temp = 0.1
-
-        self.current = Var(
-            self.flowsheet().time,
-            initialize=temp,
-            bounds=(-1e5, 1e5),
-            units=pyunits.amp,
-            doc="Current across a cell-pair or stack",
-        )
 
         if (
             not self.config.pressure_drop_method == PressureDropMethod.none
@@ -825,17 +756,6 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
         )
         def eq_elec_migration_flux_in(self, t, p, j):
             if j == "H2O":
-                print(
-                    "water flux = ",
-                    value(
-                        self.water_trans_number_membrane["bpem"]
-                        * (
-                            self.current[t]
-                            / (self.cell_width * self.cell_length)
-                            / Constants.faraday_constant
-                        )
-                    ),
-                )
                 return self.elec_migration_flux_in[t, p, j] == (
                     self.water_trans_number_membrane["bpem"]
                 ) * (
@@ -861,25 +781,6 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
                             * Constants.faraday_constant
                         )
                     else:
-                        print(
-                            "Salt species:",
-                            j,
-                            "Salt flux = ",
-                            value(
-                                self.ion_trans_number_membrane["bpem", j]
-                                * (
-                                    self.current_utilization
-                                    * self.current_dens_lim_bpem[t]
-                                    / (self.cell_width * self.cell_length)
-                                )
-                                / (
-                                    self.config.property_package.charge_comp[j]
-                                    * Constants.faraday_constant
-                                )
-                            ),
-                        )
-                        # return (self.elec_migration_flux_in[t, p, j] ==
-                        #         2 * pyunits.mol * pyunits.meter ** -2 * pyunits.s ** -1)
                         return self.elec_migration_flux_in[t, p, j] == (
                             self.ion_trans_number_membrane["bpem", j]
                         ) * (
@@ -895,25 +796,6 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
                         self.config.Operation_method_bpem
                         == LimitingOperationMode.Over_limiting
                     ):
-                        print(
-                            "Water species:",
-                            j,
-                            "Water flux = ",
-                            value(
-                                1
-                                * (
-                                    1
-                                    * (self.current[t] - self.current_dens_lim_bpem[t])
-                                    / (self.cell_width * self.cell_length)
-                                )
-                                / (
-                                    self.config.property_package.charge_comp[j]
-                                    * Constants.faraday_constant
-                                )
-                            ),
-                        )
-                        # return (self.elec_migration_flux_in[t, p, j] ==
-                        #         1 * pyunits.mol * pyunits.meter ** -2 * pyunits.s ** -1)
                         return self.elec_migration_flux_in[t, p, j] == (1) * (
                             1
                             * (self.current[t] - self.current_dens_lim_bpem[t])
@@ -941,63 +823,6 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
             doc="Equation for electrical migration flux_out",
         )
         def eq_elec_migration_flux_out(self, t, p, j):
-
-            # if j == "H2O":
-            #
-            #     return self.elec_migration_flux_out[t, p, j] == (
-            #         self.water_trans_number_membrane["bpem"]
-            #     ) * (
-            #             self.current[t]
-            #             / (self.cell_width * self.cell_length)
-            #             / Constants.faraday_constant
-            #     )
-            # elif j in self.ion_set:
-            #     if not (j == "C_+" or j == "A_-"):
-            #         if (
-            #                 self.config.Operation_method_bpem
-            #                 == LimitingOperationMode.Sub_limiting
-            #         ):
-            #             return self.elec_migration_flux_out[t, p, j] == (
-            #                 self.ion_trans_number_membrane["bpem", j]
-            #             ) * (
-            #                     self.current_utilization
-            #                     * self.current[t]
-            #                     / (self.cell_width * self.cell_length)
-            #             ) / (
-            #                     self.config.property_package.charge_comp[j]
-            #                     * Constants.faraday_constant
-            #             )
-            #         else:
-            #             return self.elec_migration_flux_out[t, p, j] == (
-            #                 self.ion_trans_number_membrane["bpem", j]
-            #             ) * (
-            #                     self.current_utilization
-            #                     * self.current_dens_lim_bpem[t]
-            #                     / (self.cell_width * self.cell_length)
-            #             ) / (
-            #                     self.config.property_package.charge_comp[j]
-            #                     * Constants.faraday_constant
-            #             )
-            #     else:
-            #         if (
-            #                 self.config.Operation_method_bpem
-            #                 == LimitingOperationMode.Over_limiting
-            #         ):
-            #             return self.elec_migration_flux_out[t, p, j] == (
-            #                 1
-            #             ) * (
-            #                     1
-            #                     * (self.current[t] - self.current_dens_lim_bpem[t] )
-            #                     / (self.cell_width * self.cell_length)
-            #             ) / (
-            #                     self.config.property_package.charge_comp[j]
-            #                     * Constants.faraday_constant
-            #             )
-            #         else:
-            #             return (self.elec_migration_flux_out[t, p, j]
-            #                     == 0 * pyunits.mol * pyunits.m ** -2 * pyunits.s ** -1)
-            # else:
-            #     self.elec_migration_flux_out[t, p, j].fix(0)
             return (
                 self.elec_migration_flux_out[t, p, j]
                 == self.elec_migration_flux_in[t, p, j]
@@ -1039,8 +864,8 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
                 ] == self.water_density / self.config.property_package.mw_comp[j] * (
                     self.water_permeability_membrane["bpem"]
                 ) * (
-                    self.cem_side.properties_out[t].pressure_osm_phase[p]
-                    - self.aem_side.properties_out[t].pressure_osm_phase[p]
+                    self.cem_side.properties_in[t].pressure_osm_phase[p]
+                    - self.aem_side.properties_in[t].pressure_osm_phase[p]
                 )
 
             else:
@@ -1143,15 +968,6 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
                 == self.aem_side.properties_out[t].flow_mass_phase_comp["Liq", "H2O"]
             )
 
-        # @self.Constraint(
-        #     self.flowsheet().time,
-        #     doc="Calculate limiting current density across the bipolar membrane",
-        # )@self.Constraint(
-        #             self.flowsheet().time,
-        #             doc="Calculate limiting current density",
-        #         )
-
-    # def eq_current_dens_lim_bpem(self, t):
     def _make_limiting_operation(self):
         self.current_dens_lim_bpem = Var(
             self.flowsheet().time,
@@ -1161,39 +977,70 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
             doc="Limiting current density across the bipolar membrane as a function of the normalized length",
         )
 
+        self.potential_lim_bpem = Var(
+            self.flowsheet().time,
+            initialize=3.6,
+            bounds=(0, 5000),
+            units=pyunits.volt,
+            doc="Potential drop across the depletion layer",
+        )
+
         self.elec_field_non_dim = Var(
             initialize=1,
             bounds=(0, 1e32),
             units=pyunits.dimensionless,
             doc="Limiting current density across the bipolar membrane as a function of the normalized length",
         )
-
-        # self.qty_une = Var(
-        #     initialize=1,
-        #     bounds=(0, 1e8),
-        #     units=pyunits.amp * pyunits.meter * pyunits.mole ** -1 * pyunits.second,
-        #     doc="intermediate variable",
-        # )
-        #
-        # self.qty_deux = Var(
-        #     initialize=1,
-        #     bounds=(0, 1e8),
-        #     units=pyunits.mole * pyunits.meter ** -3 * pyunits.second ** -1,
-        #     doc="intermediate variable",
-        # )
-        #
-        # self.qty_trois = Var(
-        #     initialize=1,
-        #     bounds=(0, 1e8),
-        #     units=pyunits.mole * pyunits.meter ** -3 * pyunits.second ** -1,
-        #     doc="intermediate variable",
-        # )
-        # self.y2 = Var(
-        #     initialize=1,
-        #     bounds=(0, 1e8),
-        #     units=pyunits.amp * pyunits.meter ** -2,
-        #     doc="intermediate variable",
-        # )
+        self.relative_permittivity = Var(
+            self.membrane_set,
+            initialize=20,
+            bounds=(1, 80),
+            domain=NonNegativeReals,
+            units=pyunits.dimensionless,
+            doc="Relative permittivity",
+        )
+        self.membrane_fixed_charge = Var(
+            self.membrane_set,
+            initialize=1.5e3,
+            bounds=(1e-1, 1e5),
+            units=pyunits.mole * pyunits.meter**-3,
+            doc="Membrane fixed charge",
+        )
+        self.kr = Var(
+            self.membrane_set,
+            initialize=1.33 * 10**11,
+            bounds=(1e-6, 1e16),
+            units=pyunits.L * pyunits.mole**-1 * pyunits.second**-1,
+            doc="Re-association rate constant",
+        )
+        self.kd_zero = Var(
+            self.membrane_set,
+            initialize=2 * 10**-5,
+            bounds=(1e-10, 1e2),
+            units=pyunits.second**-1,
+            doc="Dissociation rate constant at no electric field",
+        )
+        self.diffus_mass = Var(
+            self.membrane_set,
+            initialize=2e-9,
+            bounds=(1e-16, 1e-6),
+            units=pyunits.meter**2 * pyunits.second**-1,
+            doc="The mass diffusivity of the solute as molecules (not individual ions)",
+        )
+        self.salt_conc_aem = Var(
+            self.membrane_set,
+            initialize=1e3,
+            bounds=(1e-6, 1e4),
+            units=pyunits.mole * pyunits.meter**-3,
+            doc="Salt concentration on the AEM side of the bipolar membrane",
+        )
+        self.salt_conc_cem = Var(
+            self.membrane_set,
+            initialize=1e3,
+            bounds=(1e-6, 1e4),
+            units=pyunits.mole * pyunits.meter**-3,
+            doc="Salt concentration on the CEM side of the bipolar membrane",
+        )
 
         @self.Constraint(
             self.flowsheet().time,
@@ -1208,49 +1055,16 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
                     self.config.limiting_current_density_data
                     * pyunits.amp
                     * pyunits.meter**-2
-                    #         / sum(
-                    #     self.cem_side.properties_in[t].conc_mol_phase_comp["Liq", j]
-                    #     for j in self.cation_set
-                    # )
-                    #         * 0.5
-                    #         * sum(
-                    #     self.cem_side.properties_in[t].conc_mol_phase_comp["Liq", j]
-                    #     + self.cem_side.properties_out[t].conc_mol_phase_comp["Liq", j]
-                    #     for j in self.cation_set
-                    # )
                 )
-
             elif (
                 self.config.limiting_current_density_method_bpem
                 == LimitingCurrentDensityMethod.Empirical
             ):
+
                 return self.current_dens_lim_bpem[t] == self.diffus_mass[
                     "bpem"
                 ] * Constants.faraday_constant * (
-                    sum(
-                        self.config.property_package.charge_comp[j]
-                        * 0.5
-                        * (
-                            self.cem_side.properties_in[t].conc_mol_phase_comp["Liq", j]
-                            + self.cem_side.properties_out[t].conc_mol_phase_comp[
-                                "Liq", j
-                            ]
-                        )
-                        for j in self.cation_set
-                        if j not in "C_+"
-                    )
-                    + sum(
-                        self.config.property_package.charge_comp[j]
-                        * 0.5
-                        * (
-                            self.aem_side.properties_in[t].conc_mol_phase_comp["Liq", j]
-                            + self.aem_side.properties_out[t].conc_mol_phase_comp[
-                                "Liq", j
-                            ]
-                        )
-                        for j in self.cation_set
-                        if j not in "C_+"
-                    )
+                    self.salt_conc_aem["bpem"] + self.salt_conc_cem["bpem"]
                 ) ** 2 / (
                     self.membrane_thickness["bpem"] * self.membrane_fixed_charge["bpem"]
                 )
@@ -1266,24 +1080,14 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
                     == LimitingpotentialMethod.InitialValue
                 ):
                     return self.potential_lim_bpem[t] == (
-                        self.config.limiting_potential_data
-                        * pyunits.volt
-                        #         / sum(
-                        #     self.cem_side.properties_in[t].conc_mol_phase_comp["Liq", j]
-                        #     for j in self.cation_set
-                        # )
-                        #         * 0.5
-                        #         * sum(
-                        #     self.cem_side.properties_in[t].conc_mol_phase_comp["Liq", j]
-                        #     + self.cem_side.properties_out[t].conc_mol_phase_comp["Liq", j]
-                        #     for j in self.cation_set
-                        # )
+                        self.config.limiting_potential_data * pyunits.volt
                     )
 
                 elif (
                     self.config.limiting_potential_method_bpem
                     == LimitingpotentialMethod.Empirical
                 ):
+                    #   [H+][OH-] concentration
                     kw = 10**-8 * pyunits.mol**2 * pyunits.meter**-6
                     conc_water = 55 * pyunits.mol * pyunits.L**-1
                     kr_loc = pyunits.convert(
@@ -1295,23 +1099,10 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
                     conc_water_loc = pyunits.convert(
                         conc_water, to_units=pyunits.mol * pyunits.meter**-3
                     )
+                    # Fraction of threshold of limiting current: currently 0.1 i_lim
                     frac = 1 * 10**-1
+                    # Dimensional pre-factor to evaulate non-dimensional electric field
                     const = 0.0936 * pyunits.K**2 * pyunits.volt**-1 * pyunits.meter
-
-                    qty_une = (
-                        Constants.vacuum_electric_permittivity
-                        * self.relative_permittivity["bpem"] ** 2
-                        * self.aem_side.properties_in[t].temperature ** 2
-                        * Constants.avogadro_number
-                        * Constants.elemental_charge
-                    ) / (
-                        const
-                        * Constants.faraday_constant
-                        * self.membrane_fixed_charge["bpem"]
-                    )
-                    qty_deux = self.kd_zero["bpem"] * conc_water_loc
-                    qty_trois = kr_loc * kw
-                    y2 = self.current_dens_lim_bpem[t] * frac
 
                     @self.Constraint(
                         self.flowsheet().time,
@@ -1329,54 +1120,31 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
                                 / (math.factorial(indx) * math.factorial(indx + 1))
                             )
 
-                        matrx *= qty_deux
-                        matrx += -qty_trois
-                        # print("matrx = ", value(matrx), pyunits.get_units(matrx))
-                        # print("qty_deux = ", value(qty_deux), pyunits.get_units(qty_deux))
-                        # print("qty_trois = ", value(qty_trois), pyunits.get_units(qty_trois))
-                        # print("qty_une = ", value(qty_une), pyunits.get_units(qty_une))
-                        # print("y2 = ", value(y2), pyunits.get_units(y2))
-                        # print("elec_field_non_dim = ", value(self.elec_field_non_dim), pyunits.get_units(self.elec_field_non_dim))
-                        # self.elec_field_non_dim = y2 / matrx / qty_une
-                        return qty_une * matrx * self.elec_field_non_dim == y2
-                        # return self.elec_field_non_dim == 2
+                        matrx *= self.kd_zero["bpem"] * conc_water_loc
+                        matrx += -kr_loc * kw
+                        return (
+                            Constants.vacuum_electric_permittivity
+                            * self.relative_permittivity["bpem"] ** 2
+                            * self.aem_side.properties_in[t].temperature ** 2
+                            * Constants.avogadro_number
+                            * Constants.elemental_charge
+                        ) / (
+                            const
+                            * Constants.faraday_constant
+                            * self.membrane_fixed_charge["bpem"]
+                        ) * matrx * self.elec_field_non_dim == self.current_dens_lim_bpem[
+                            t
+                        ] * frac
 
-                    # dat =[y2, qty_une, qty_deux, qty_trois]
-                    # print(dat)
-                    #
-                    # print("check: current_dens_lim_bpem = ", value(self.current_dens_lim_bpem[t]))
-                    # self.eq_current_dens_lim_bpem()
-                    # print("updated: current_dens_lim_bpem = ", value(self.current_dens_lim_bpem[t]))
-
-                    # terms = 40
-                    # gE_raw = []
-                    # for indx in range(terms):
-                    #     rev_indx = terms - indx - 1
-                    #     gE_raw.append(2 ** rev_indx / (math.factorial(rev_indx) * math.factorial(rev_indx + 1)))
-                    #
-                    # gE = np.array(gE_raw)
-                    # print("gE2 post = ", gE)
-                    # gE2 = gE * qty_deux
-                    # print("gE2 pre = ", gE2)
-                    # gE2[-1] += -qty_trois
-                    # print("gE2 post = ", gE2)
-                    # qty = gE2
-                    # coeff = qty.tolist() + [-y2 / qty_une]
-                    # print("qty = ", qty)
-                    # print("y2", y2, "...qty une = ", qty_une)
-                    # print("coeff = ", coeff)
-                    # x2 = np.roots(coeff)
-                    # x2_real = [root.real for root in x2 if np.isclose(root.imag, 0) and root.real > 0]
-                    # non_dim_field = np.array(x2_real)
-
-                    # non_dim_field = np.array(17.16600615)
-
+                    # Dimensional electric field
                     field_generated = (
                         self.elec_field_non_dim
                         * self.relative_permittivity["bpem"]
                         * self.aem_side.properties_in[t].temperature ** 2
                         / const
                     )
+
+                    # Depletion length at the junction of the bipolar membrane
                     lambda_depletion = (
                         field_generated
                         * Constants.vacuum_electric_permittivity
@@ -1395,12 +1163,6 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
                 return self.potential_lim_bpem[t] == 0 * pyunits.volt
 
     def _get_fluid_dimensionless_quantities(self):
-        self.diffus_mass = Var(
-            initialize=1e-9,
-            bounds=(1e-16, 1e-6),
-            units=pyunits.meter**2 * pyunits.second**-1,
-            doc="The mass diffusivity of the solute as molecules (not individual ions)",
-        )
         self.hydraulic_diameter = Var(
             initialize=1e-3,
             bounds=(0, None),
@@ -1413,18 +1175,6 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
             units=pyunits.dimensionless,
             doc="Reynolds Number",
         )
-        # self.N_Sc = Var(
-        #     initialize=2000,
-        #     bounds=(0, None),
-        #     units=pyunits.dimensionless,
-        #     doc="Schmidt Number",
-        # )
-        # self.N_Sh = Var(
-        #     initialize=100,
-        #     bounds=(0, None),
-        #     units=pyunits.dimensionless,
-        #     doc="Sherwood Number",
-        # )
 
         if self.config.hydraulic_diameter_method == HydraulicDiameterMethod.fixed:
             _log.warning("Do not forget to FIX the channel hydraulic diameter in [m]!")
@@ -1477,20 +1227,6 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
                 * self.visc_d**-1
             )
 
-        # @self.Constraint(
-        #     doc="To calculate Sc",
-        # )
-        # def eq_Sc(self):
-        #
-        #     return self.N_Sc == self.visc_d * self.dens_mass**-1 * self.diffus_mass**-1
-
-        # @self.Constraint(
-        #     doc="To calculate Sh",
-        # )
-        # def eq_Sh(self):
-        #
-        #     return self.N_Sh == 0.29 * self.N_Re**0.5 * self.N_Sc**0.33
-
     def _pressure_drop_calculation(self):
         self.pressure_drop_total = Var(
             self.flowsheet().time,
@@ -1509,8 +1245,7 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
             _log.warning(
                 "Do not forget to FIX the experimental pressure drop value in [Pa/m]!"
             )
-        else:  # PressureDropMethod.Darcy_Weisbach is used
-            # if not (self.config.has_Nernst_diffusion_layer == True):
+        else:
             self._get_fluid_dimensionless_quantities()
 
             self.friction_factor = Var(
@@ -1613,16 +1348,6 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
                         self[k].cem_side.properties_in[0].flow_mol_phase_comp["Liq", j]
                     )
                 )
-        # if hasattr(self[k], "conc_mem_surf_mol_ioa"):
-        #     for mem in self[k].membrane_set:
-        #         for side in self[k].electrode_side:
-        #             for j in self[k].ion_set:
-        #                 self[k].conc_mem_surf_mol_ioa[mem, side, 0, j].set_value(
-        #                     self[k]
-        #                     .cem_side.properties_in[0]
-        #                     .conc_mol_phase_comp["Liq", j]
-        #                 )
-        # Initialize aem side of the bipolar membrane block
         flags_aem_side = self.aem_side.initialize(
             outlvl=outlvl,
             optarg=optarg,
@@ -1668,9 +1393,6 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
             iscale.set_scaling_factor(self.solute_diffusivity_membrane, 1e10)
         if iscale.get_scaling_factor(self.membrane_thickness, warning=True) is None:
             iscale.set_scaling_factor(self.membrane_thickness, 1e4)
-
-        if iscale.get_scaling_factor(self.membrane_fixed_charge, warning=True) is None:
-            iscale.set_scaling_factor(self.membrane_fixed_charge, 1e3)
         if (
             iscale.get_scaling_factor(self.water_permeability_membrane, warning=True)
             is None
@@ -1697,13 +1419,34 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
             iscale.set_scaling_factor(self.current, 1)
         if iscale.get_scaling_factor(self.voltage, warning=True) is None:
             iscale.set_scaling_factor(self.voltage, 1)
-        if iscale.get_scaling_factor(self.potential_lim_bpem, warning=True) is None:
-            iscale.set_scaling_factor(self.potential_lim_bpem, 1)
-        if hasattr(self, "diffus_mass") and (
-            iscale.get_scaling_factor(self.diffus_mass, warning=True) is None
-        ):
-            iscale.set_scaling_factor(self.diffus_mass, 1e9)
-        # The folloing Vars are built for constructing constraints and their sf are computed from other Vars.
+
+        if self.config.Operation_method_bpem == LimitingOperationMode.Over_limiting:
+
+            if iscale.get_scaling_factor(self.potential_lim_bpem, warning=True) is None:
+                iscale.set_scaling_factor(self.potential_lim_bpem, 1)
+            if (
+                iscale.get_scaling_factor(self.membrane_fixed_charge, warning=True)
+                is None
+            ):
+                iscale.set_scaling_factor(self.membrane_fixed_charge, 1e-3)
+            if hasattr(self, "diffus_mass") and (
+                iscale.get_scaling_factor(self.diffus_mass, warning=True) is None
+            ):
+                iscale.set_scaling_factor(self.diffus_mass, 1e9)
+            if hasattr(self, "salt_conc_aem") and (
+                iscale.get_scaling_factor(self.salt_conc_aem, warning=True) is None
+            ):
+                iscale.set_scaling_factor(self.salt_conc_aem, 1e-2)
+            if hasattr(self, "salt_conc_cem") and (
+                iscale.get_scaling_factor(self.salt_conc_cem, warning=True) is None
+            ):
+                iscale.set_scaling_factor(self.salt_conc_cem, 1e-2)
+            if iscale.get_scaling_factor(self.kr, warning=True) is None:
+                iscale.set_scaling_factor(self.kr, 1e-11)
+            if iscale.get_scaling_factor(self.kd_zero, warning=True) is None:
+                iscale.set_scaling_factor(self.kd_zero, 1e5)
+
+        # The following Vars are built for constructing constraints and their sf are computed from other Vars.
         iscale.set_scaling_factor(
             self.elec_migration_flux_in,
             iscale.get_scaling_factor(self.current)
@@ -1730,15 +1473,7 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
                     )
                 )
             else:
-                sf = (
-                    iscale.get_scaling_factor(self.solute_diffusivity_membrane)
-                    / iscale.get_scaling_factor(self.membrane_thickness)
-                    * iscale.get_scaling_factor(
-                        self.cem_side.properties_in[ind[0]].conc_mol_phase_comp[
-                            ind[1], ind[2]
-                        ]
-                    )
-                )
+                sf = 1
             iscale.set_scaling_factor(self.nonelec_flux_in[ind], sf)
         for ind in self.nonelec_flux_out:
             if ind[2] == "H2O":
@@ -1747,19 +1482,11 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
                     * 0.018
                     * iscale.get_scaling_factor(self.water_permeability_membrane)
                     * iscale.get_scaling_factor(
-                        self.cem_side.properties_out[ind[0]].pressure_osm_phase[ind[1]]
+                        self.aem_side.properties_in[ind[0]].pressure_osm_phase[ind[1]]
                     )
                 )
             else:
-                sf = (
-                    iscale.get_scaling_factor(self.solute_diffusivity_membrane)
-                    / iscale.get_scaling_factor(self.membrane_thickness)
-                    * iscale.get_scaling_factor(
-                        self.cem_side.properties_out[ind[0]].conc_mol_phase_comp[
-                            ind[1], ind[2]
-                        ]
-                    )
-                )
+                sf = 1
 
             iscale.set_scaling_factor(self.nonelec_flux_out[ind], sf)
         iscale.set_scaling_factor(
@@ -1795,90 +1522,6 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
 
                 iscale.set_scaling_factor(self.velocity_aem_side[ind], sf)
                 iscale.set_scaling_factor(self.velocity_cem_side[ind], sf)
-        # if hasattr(self, "conc_mem_surf_mol_ioa"):
-        #     for ind in self.conc_mem_surf_mol_ioa:
-        #         if iscale.get_scaling_factor(self.conc_mem_surf_mol_ioa[ind]) is None:
-        #             if (ind[0] == "cem" and ind[1] == "cathode_left") or (
-        #                 ind[0] == "aem" and ind[1] == "anode_right"
-        #             ):
-        #                 iscale.set_scaling_factor(
-        #                     self.conc_mem_surf_mol_ioa[ind],
-        #                     iscale.get_scaling_factor(
-        #                         self.cem_side.properties_in[
-        #                             ind[2]
-        #                         ].conc_mol_phase_comp["Liq", ind[3]]
-        #                     ),
-        #                 )
-        #             else:
-        #                 iscale.set_scaling_factor(
-        #                     self.conc_mem_surf_mol_ioa[ind],
-        #                     iscale.get_scaling_factor(
-        #                         self.aem_side.properties_in[ind[2]].conc_mol_phase_comp[
-        #                             "Liq", ind[3]
-        #                         ]
-        #                     ),
-        #                 )
-
-        # if hasattr(self, "potential_nonohm_membrane_ioa"):
-        #     if iscale.get_scaling_factor(self.potential_nonohm_membrane_ioa) is None:
-        #         sf = (
-        #             value(Constants.faraday_constant)
-        #             * value(Constants.gas_constant) ** -1
-        #             * 298.15**-1
-        #         )
-        #         iscale.set_scaling_factor(self.potential_nonohm_membrane_ioa, sf)
-        # if hasattr(self, "potential_nonohm_dl_ioa"):
-        #     if iscale.get_scaling_factor(self.potential_nonohm_dl_ioa) is None:
-        #         sf = (
-        #             value(Constants.faraday_constant)
-        #             * value(Constants.gas_constant) ** -1
-        #             * 298.15**-1
-        #         )
-        #         iscale.set_scaling_factor(self.potential_nonohm_dl_ioa, sf)
-        # if hasattr(self, "potential_ohm_dl_ioa"):
-        #     if iscale.get_scaling_factor(self.potential_ohm_dl_ioa) is None:
-        #         sf = (
-        #             96485**-1
-        #             * sum(
-        #                 iscale.get_scaling_factor(
-        #                     self.aem_side.properties_in[0].diffus_phase_comp["Liq", j]
-        #                 )
-        #                 ** -2
-        #                 for j in self.ion_set
-        #             )
-        #             ** -0.5
-        #             * float(len(self.ion_set)) ** -1
-        #         )
-        #         iscale.set_scaling_factor(self.potential_ohm_dl_ioa, sf)
-        # if hasattr(self, "dl_thickness_ioa"):
-        #     if iscale.get_scaling_factor(self.dl_thickness_ioa) is None:
-        #         for ind in self.dl_thickness_ioa:
-        #             sf = (
-        #                 96485**-1
-        #                 * sum(
-        #                     iscale.get_scaling_factor(
-        #                         self.aem_side.properties_in[0].diffus_phase_comp[
-        #                             "Liq", j
-        #                         ]
-        #                     )
-        #                     ** -2
-        #                     for j in self.ion_set
-        #                 )
-        #                 ** -0.5
-        #                 * len(self.ion_set) ** -1
-        #                 * sum(
-        #                     iscale.get_scaling_factor(
-        #                         self.conc_mem_surf_mol_ioa[ind, j]
-        #                     )
-        #                     ** 2
-        #                     for j in self.cation_set
-        #                 )
-        #                 ** 0.5
-        #                 * iscale.get_scaling_factor(self.current) ** -1
-        #                 * iscale.get_scaling_factor(self.cell_width)
-        #                 * iscale.get_scaling_factor(self.cell_length)
-        #             )
-        #             iscale.set_scaling_factor(self.dl_thickness_ioa[ind], sf)
         if hasattr(self, "spacer_specific_area") and (
             iscale.get_scaling_factor(self.spacer_specific_area, warning=True) is None
         ):
@@ -1897,24 +1540,7 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
                 * iscale.get_scaling_factor(self.visc_d) ** -1
             )
             iscale.set_scaling_factor(self.N_Re, sf)
-        # if hasattr(self, "N_Sc") and (
-        #     iscale.get_scaling_factor(self.N_Sc, warning=True) is None
-        # ):
-        #     sf = (
-        #         iscale.get_scaling_factor(self.visc_d)
-        #         * iscale.get_scaling_factor(self.dens_mass) ** -1
-        #         * iscale.get_scaling_factor(self.diffus_mass) ** -1
-        #     )
-        #     iscale.set_scaling_factor(self.N_Sc, sf)
-        # if hasattr(self, "N_Sh") and (
-        #     iscale.get_scaling_factor(self.N_Sh, warning=True) is None
-        # ):
-        #     sf = (
-        #         10
-        #         * iscale.get_scaling_factor(self.N_Re) ** 0.5
-        #         * iscale.get_scaling_factor(self.N_Sc) ** 0.33
-        #     )
-        #     iscale.set_scaling_factor(self.N_Sh, sf)
+
         if hasattr(self, "friction_factor") and (
             iscale.get_scaling_factor(self.friction_factor, warning=True) is None
         ):
@@ -1972,48 +1598,23 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
                 elif (
                     self.config.limiting_current_density_method_bpem
                     == LimitingCurrentDensityMethod.Empirical
+                ) and (
+                    self.config.Operation_method_bpem
+                    == LimitingOperationMode.Over_limiting
                 ):
                     sf = (
                         iscale.get_scaling_factor(self.diffus_mass)
-                        * Constants.faraday_constant
-                        * sum(
-                            iscale.get_scaling_factor(
-                                self.aem_side.properties_in[0].conc_mol_phase_comp[
-                                    "Liq", j
-                                ]
-                            )
-                            ** 2
-                            / (
-                                iscale.get_scaling_factor(self.membrane_thickness)
-                                * iscale.get_scaling_factor(self.membrane_fixed_charge)
-                            )
-                            for j in self.cation_set
-                            if j not in "C_+"
+                        * value(Constants.faraday_constant) ** -1
+                        * (2 * iscale.get_scaling_factor(self.salt_conc_aem)) ** 2
+                        / (
+                            iscale.get_scaling_factor(self.membrane_thickness)
+                            * iscale.get_scaling_factor(self.membrane_fixed_charge)
                         )
-                        ** (0.5 * 0.5)
                     )
+
+                    print("current_dens_lim_bpem sf:", sf)
                     iscale.set_scaling_factor(self.current_dens_lim_bpem, sf)
-                # elif (
-                #     self.config.limiting_current_density_method
-                #     == LimitingCurrentDensityMethod.Theoretical
-                # ):
-                #     sf = (
-                #         iscale.get_scaling_factor(self.N_Sh)
-                #         * iscale.get_scaling_factor(self.diffus_mass)
-                #         * iscale.get_scaling_factor(self.hydraulic_diameter) ** -1
-                #         * 96485**-1
-                #         * sum(
-                #             iscale.get_scaling_factor(
-                #                 self.aem_side.properties_in[0].conc_mol_phase_comp[
-                #                     "Liq", j
-                #                 ]
-                #             )
-                #             ** 2
-                #             for j in self.cation_set
-                #         )
-                #         ** 0.5
-                #     )
-                #     iscale.set_scaling_factor(self.current_dens_lim_ioa, sf)
+
         # Constraint scaling
         for ind, c in self.eq_current_voltage_relation.items():
             iscale.constraint_scaling_transform(
@@ -2068,32 +1669,12 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
                     iscale.get_scaling_factor(self.nonelec_flux_out[ind]),
                 ),
             )
-        # if hasattr(self, "eq_potential_nonohm_membrane_ioa"):
-        #     for ind, c in self.eq_potential_nonohm_membrane_ioa.items():
-        #         iscale.constraint_scaling_transform(
-        #             c,
-        #             iscale.get_scaling_factor(self.potential_nonohm_membrane_ioa[ind]),
-        #         )
+
         if hasattr(self, "eq_current_dens_lim_bpem"):
             for ind, c in self.eq_current_dens_lim_bpem.items():
                 iscale.constraint_scaling_transform(
                     c, iscale.get_scaling_factor(self.current_dens_lim_bpem[ind])
                 )
-        # if hasattr(self, "eq_potential_nonohm_dl_ioa"):
-        #     for ind, c in self.eq_potential_nonohm_dl_ioa.items():
-        #         iscale.constraint_scaling_transform(
-        #             c, iscale.get_scaling_factor(self.potential_nonohm_dl_ioa[ind])
-        #         )
-        # if hasattr(self, "eq_potential_ohm_dl_ioa"):
-        #     for ind, c in self.eq_potential_ohm_dl_ioa.items():
-        #         iscale.constraint_scaling_transform(
-        #             c, iscale.get_scaling_factor(self.potential_ohm_dl_ioa[ind])
-        #         )
-        # if hasattr(self, "eq_dl_thickness_ioa"):
-        #     for ind, c in self.eq_dl_thickness_ioa.items():
-        #         iscale.constraint_scaling_transform(
-        #             c, iscale.get_scaling_factor(self.dl_thickness_ioa[ind])
-        #         )
 
         for ind, c in self.eq_recovery_mass_H2O.items():
             iscale.constraint_scaling_transform(
