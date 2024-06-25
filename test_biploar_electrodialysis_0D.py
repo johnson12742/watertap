@@ -23,7 +23,7 @@ from pyomo.environ import (
     value,
 )
 
-from electrodialysis_bmed import (
+from electrodialysis_bipolar import (
     BiPolarElectrodialysis0D,
     LimitingCurrentDensityMethod,
     LimitingpotentialMethod,
@@ -290,8 +290,6 @@ class Test_operation_Method:
         ) == pytest.approx(0.99389, rel=1e-3)
 
 
-#
-#
 class Test_limiting_parameters:
     @pytest.fixture(scope="class")
     def limiting_current_check(self):
