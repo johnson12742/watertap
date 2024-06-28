@@ -48,26 +48,26 @@ class Test_operation_Method:
         m = ConcreteModel()
         m.fs = FlowsheetBlock(dynamic=False)
         ion_dict = {
-            "solute_list": ["Na_+", "Cl_-", "C_+", "A_-"],
+            "solute_list": ["Na_+", "Cl_-", "H_+", "OH_-"],
             "mw_data": {
                 "H2O": 18e-3,
                 "Na_+": 23e-3,
                 "Cl_-": 35.5e-3,
-                "C_+": 1e-3,
-                "A_-": 17.0e-3,
+                "H_+": 1e-3,
+                "OH_-": 17.0e-3,
             },
             "elec_mobility_data": {
                 ("Liq", "Na_+"): 5.19e-8,
                 ("Liq", "Cl_-"): 7.92e-8,
-                ("Liq", "C_+"): 36.23e-8,
-                ("Liq", "A_-"): 20.64e-8,
+                ("Liq", "H_+"): 36.23e-8,
+                ("Liq", "OH_-"): 20.64e-8,
             },
-            "charge": {"Na_+": 1, "Cl_-": -1, "C_+": 1, "A_-": -1},
+            "charge": {"Na_+": 1, "Cl_-": -1, "H_+": 1, "OH_-": -1},
             "diffusivity_data": {
                 ("Liq", "Na_+"): 1.33e-9,
                 ("Liq", "Cl_-"): 2.03e-9,
-                ("Liq", "C_+"): 9.31e-9,
-                ("Liq", "A_-"): 5.27e-9,
+                ("Liq", "H_+"): 9.31e-9,
+                ("Liq", "OH_-"): 5.27e-9,
             },
         }
         m.fs.properties = MCASParameterBlock(**ion_dict)
@@ -79,12 +79,12 @@ class Test_operation_Method:
 
         m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "Na_+"].fix(7.38e-4)
         m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "Cl_-"].fix(7.38e-4)
-        m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "C_+"].fix(7.38e-4)
-        m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "A_-"].fix(7.38e-4)
+        m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "H_+"].fix(7.38e-4)
+        m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "OH_-"].fix(7.38e-4)
         m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "Na_+"].fix(7.38e-4)
         m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "Cl_-"].fix(7.38e-4)
-        m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "C_+"].fix(7.38e-4)
-        m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "A_-"].fix(7.38e-4)
+        m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "H_+"].fix(7.38e-4)
+        m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "OH_-"].fix(7.38e-4)
 
         m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "H2O"].fix(2.40e-1)
         m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "H2O"].fix(2.40e-1)
@@ -96,10 +96,10 @@ class Test_operation_Method:
             "flow_mol_phase_comp", 1e3, index=("Liq", "Cl_-")
         )
         m.fs.properties.set_default_scaling(
-            "flow_mol_phase_comp", 1e3, index=("Liq", "C_+")
+            "flow_mol_phase_comp", 1e3, index=("Liq", "H_+")
         )
         m.fs.properties.set_default_scaling(
-            "flow_mol_phase_comp", 1e3, index=("Liq", "A_-")
+            "flow_mol_phase_comp", 1e3, index=("Liq", "OH_-")
         )
         m.fs.properties.set_default_scaling(
             "flow_mol_phase_comp", 1e2, index=("Liq", "H2O")
@@ -113,26 +113,26 @@ class Test_operation_Method:
         m = ConcreteModel()
         m.fs = FlowsheetBlock(dynamic=False)
         ion_dict = {
-            "solute_list": ["Na_+", "Cl_-", "C_+", "A_-"],
+            "solute_list": ["Na_+", "Cl_-", "H_+", "OH_-"],
             "mw_data": {
                 "H2O": 18e-3,
                 "Na_+": 23e-3,
                 "Cl_-": 35.5e-3,
-                "C_+": 1e-3,
-                "A_-": 17.0e-3,
+                "H_+": 1e-3,
+                "OH_-": 17.0e-3,
             },
             "elec_mobility_data": {
                 ("Liq", "Na_+"): 5.19e-8,
                 ("Liq", "Cl_-"): 7.92e-8,
-                ("Liq", "C_+"): 36.23e-8,
-                ("Liq", "A_-"): 20.64e-8,
+                ("Liq", "H_+"): 36.23e-8,
+                ("Liq", "OH_-"): 20.64e-8,
             },
-            "charge": {"Na_+": 1, "Cl_-": -1, "C_+": 1, "A_-": -1},
+            "charge": {"Na_+": 1, "Cl_-": -1, "H_+": 1, "OH_-": -1},
             "diffusivity_data": {
                 ("Liq", "Na_+"): 1.33e-9,
                 ("Liq", "Cl_-"): 2.03e-9,
-                ("Liq", "C_+"): 9.31e-9,
-                ("Liq", "A_-"): 5.27e-9,
+                ("Liq", "H_+"): 9.31e-9,
+                ("Liq", "OH_-"): 5.27e-9,
             },
         }
         m.fs.properties = MCASParameterBlock(**ion_dict)
@@ -148,18 +148,18 @@ class Test_operation_Method:
 
         m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "Na_+"].fix(7.38e-1)
         m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "Cl_-"].fix(7.38e-1)
-        m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "C_+"].fix(7.38e-1)
-        m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "A_-"].fix(7.38e-1)
+        m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "H_+"].fix(7.38e-1)
+        m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "OH_-"].fix(7.38e-1)
         m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "Na_+"].fix(7.38e-1)
         m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "Cl_-"].fix(7.38e-1)
-        m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "C_+"].fix(7.38e-1)
-        m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "A_-"].fix(7.38e-1)
+        m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "H_+"].fix(7.38e-1)
+        m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "OH_-"].fix(7.38e-1)
 
         m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "H2O"].fix(2.40e2)
         m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "H2O"].fix(2.40e2)
 
         m.fs.properties.set_default_scaling(
-            "flow_mol_phase_comp", 1e-1, index=("Liq", "H2O")
+            "flow_mol_phase_comp", 1e1, index=("Liq", "H2O")
         )
         m.fs.properties.set_default_scaling(
             "flow_mol_phase_comp", 1e3, index=("Liq", "Na_+")
@@ -168,10 +168,10 @@ class Test_operation_Method:
             "flow_mol_phase_comp", 1e3, index=("Liq", "Cl_-")
         )
         m.fs.properties.set_default_scaling(
-            "flow_mol_phase_comp", 1e3, index=("Liq", "C_+")
+            "flow_mol_phase_comp", 1e3, index=("Liq", "H_+")
         )
         m.fs.properties.set_default_scaling(
-            "flow_mol_phase_comp", 1e3, index=("Liq", "A_-")
+            "flow_mol_phase_comp", 1e3, index=("Liq", "OH_-")
         )
 
         m.fs.unit.cell_pair_num.fix(1)
@@ -194,38 +194,38 @@ class Test_operation_Method:
             m.fs.unit.cell_width.fix(0.1)
             m.fs.unit.cell_length.fix(0.79)
             m.fs.unit.membrane_thickness["bpem"].fix(1.3e-4)
-            m.fs.unit.solute_diffusivity_membrane["bpem", "Na_+"].fix(
-                (1.8e-10 + 1.25e-10) / 2
-            )
-            m.fs.unit.solute_diffusivity_membrane["bpem", "Cl_-"].fix(
-                (1.8e-10 + 1.25e-10) / 2
-            )
-            m.fs.unit.solute_diffusivity_membrane["bpem", "C_+"].fix(
-                (1.8e-10 + 1.25e-10) / 2
-            )
-            m.fs.unit.solute_diffusivity_membrane["bpem", "A_-"].fix(
-                (1.8e-10 + 1.25e-10) / 2
-            )
+            # m.fs.unit.solute_diffusivity_membrane["bpem", "Na_+"].fix(
+            #     (1.8e-10 + 1.25e-10) / 2
+            # )
+            # m.fs.unit.solute_diffusivity_membrane["bpem", "Cl_-"].fix(
+            #     (1.8e-10 + 1.25e-10) / 2
+            # )
+            # m.fs.unit.solute_diffusivity_membrane["bpem", "H_+"].fix(
+            #     (1.8e-10 + 1.25e-10) / 2
+            # )
+            # m.fs.unit.solute_diffusivity_membrane["bpem", "OH_-"].fix(
+            #     (1.8e-10 + 1.25e-10) / 2
+            # )
             m.fs.unit.ion_trans_number_membrane["bpem", "Na_+"].fix(0.5)
             m.fs.unit.ion_trans_number_membrane["bpem", "Cl_-"].fix(0.5)
-            m.fs.unit.ion_trans_number_membrane["bpem", "C_+"].fix(0.1)
-            m.fs.unit.ion_trans_number_membrane["bpem", "A_-"].fix(0.1)
-            m.fs.unit.solute_diffusivity_membrane["bpem", "Na_+"].fix(
-                (1.8e-10 + 1.25e-10) / 2
-            )
-            m.fs.unit.solute_diffusivity_membrane["bpem", "Cl_-"].fix(
-                (1.8e-10 + 1.25e-10) / 2
-            )
-            m.fs.unit.solute_diffusivity_membrane["bpem", "C_+"].fix(
-                (1.8e-10 + 1.25e-10) / 2
-            )
-            m.fs.unit.solute_diffusivity_membrane["bpem", "A_-"].fix(
-                (1.8e-10 + 1.25e-10) / 2
-            )
+            m.fs.unit.ion_trans_number_membrane["bpem", "H_+"].fix(0.1)
+            m.fs.unit.ion_trans_number_membrane["bpem", "OH_-"].fix(0.1)
+            # m.fs.unit.solute_diffusivity_membrane["bpem", "Na_+"].fix(
+            #     (1.8e-10 + 1.25e-10) / 2
+            # )
+            # m.fs.unit.solute_diffusivity_membrane["bpem", "Cl_-"].fix(
+            #     (1.8e-10 + 1.25e-10) / 2
+            # )
+            # m.fs.unit.solute_diffusivity_membrane["bpem", "H_+"].fix(
+            #     (1.8e-10 + 1.25e-10) / 2
+            # )
+            # m.fs.unit.solute_diffusivity_membrane["bpem", "OH_-"].fix(
+            #     (1.8e-10 + 1.25e-10) / 2
+            # )
             m.fs.unit.ion_trans_number_membrane["bpem", "Na_+"].fix(0.5)
             m.fs.unit.ion_trans_number_membrane["bpem", "Cl_-"].fix(0.5)
-            m.fs.unit.ion_trans_number_membrane["bpem", "C_+"].fix(0.1)
-            m.fs.unit.ion_trans_number_membrane["bpem", "A_-"].fix(0.1)
+            m.fs.unit.ion_trans_number_membrane["bpem", "H_+"].fix(0.1)
+            m.fs.unit.ion_trans_number_membrane["bpem", "OH_-"].fix(0.1)
 
             # Set inlet stream. These have been scaled up by a factor of 1e3 from the ED process
             m.fs.unit.inlet_aem_side.pressure.fix(101325)
@@ -254,10 +254,10 @@ class Test_operation_Method:
             bped_m[0].fs.unit.elec_migration_flux_out[0, "Liq", "Cl_-"]
         ) == pytest.approx(-0.0005248, rel=1e-2)
         assert value(
-            bped_m[0].fs.unit.elec_migration_flux_out[0, "Liq", "C_+"]
+            bped_m[0].fs.unit.elec_migration_flux_out[0, "Liq", "H_+"]
         ) == pytest.approx(0, rel=1e-3)
         assert value(
-            bped_m[0].fs.unit.elec_migration_flux_out[0, "Liq", "A_-"]
+            bped_m[0].fs.unit.elec_migration_flux_out[0, "Liq", "OH_-"]
         ) == pytest.approx(0, rel=1e-3)
         assert value(
             bped_m[0].fs.unit.elec_migration_flux_out[0, "Liq", "H2O"]
@@ -274,20 +274,36 @@ class Test_operation_Method:
         results = solver.solve(bped_m[1])
         assert_optimal_termination(results)
         assert value(
-            bped_m[1].fs.unit.elec_migration_flux_out[0, "Liq", "Na_+"]
-        ) == pytest.approx(0.032798, rel=1e-3)
+            bped_m[1].fs.unit.cem_side.mass_transfer_term[0, "Liq", "Na_+"]
+        ) == pytest.approx(0.00259, rel=1e-3)
         assert value(
-            bped_m[1].fs.unit.elec_migration_flux_out[0, "Liq", "Cl_-"]
-        ) == pytest.approx(-0.032798, rel=1e-3)
+            bped_m[1].fs.unit.cem_side.mass_transfer_term[0, "Liq", "Cl_-"]
+        ) == pytest.approx(-0.00259, rel=1e-3)
         assert value(
-            bped_m[1].fs.unit.elec_migration_flux_out[0, "Liq", "C_+"]
-        ) == pytest.approx(0.1312, rel=1e-3)
+            bped_m[1].fs.unit.cem_side.mass_transfer_term[0, "Liq", "H_+"]
+        ) == pytest.approx(0.01036, rel=1e-3)
         assert value(
-            bped_m[1].fs.unit.elec_migration_flux_out[0, "Liq", "A_-"]
-        ) == pytest.approx(-0.1312, rel=1e-3)
+            bped_m[1].fs.unit.cem_side.mass_transfer_term[0, "Liq", "OH_-"]
+        ) == pytest.approx(0, rel=1e-3)
         assert value(
-            bped_m[1].fs.unit.elec_migration_flux_out[0, "Liq", "H2O"]
-        ) == pytest.approx(0.99389, rel=1e-3)
+            bped_m[1].fs.unit.cem_side.mass_transfer_term[0, "Liq", "H2O"]
+        ) == pytest.approx(0.0785, rel=1e-3)
+
+        assert value(
+            bped_m[1].fs.unit.aem_side.mass_transfer_term[0, "Liq", "Na_+"]
+        ) == pytest.approx(-0.00259, rel=1e-3)
+        assert value(
+            bped_m[1].fs.unit.aem_side.mass_transfer_term[0, "Liq", "Cl_-"]
+        ) == pytest.approx(0.00259, rel=1e-3)
+        assert value(
+            bped_m[1].fs.unit.aem_side.mass_transfer_term[0, "Liq", "H_+"]
+        ) == pytest.approx(0, rel=1e-3)
+        assert value(
+            bped_m[1].fs.unit.aem_side.mass_transfer_term[0, "Liq", "OH_-"]
+        ) == pytest.approx(0.01036, rel=1e-3)
+        assert value(
+            bped_m[1].fs.unit.aem_side.mass_transfer_term[0, "Liq", "H2O"]
+        ) == pytest.approx(-0.0785, rel=1e-3)
 
 
 class Test_limiting_parameters:
@@ -296,26 +312,26 @@ class Test_limiting_parameters:
         m = ConcreteModel()
         m.fs = FlowsheetBlock(dynamic=False)
         ion_dict = {
-            "solute_list": ["Na_+", "Cl_-", "C_+", "A_-"],
+            "solute_list": ["Na_+", "Cl_-", "H_+", "OH_-"],
             "mw_data": {
                 "H2O": 18e-3,
                 "Na_+": 23e-3,
                 "Cl_-": 35.5e-3,
-                "C_+": 1e-3,
-                "A_-": 17.0e-3,
+                "H_+": 1e-3,
+                "OH_-": 17.0e-3,
             },
             "elec_mobility_data": {
                 ("Liq", "Na_+"): 5.19e-8,
                 ("Liq", "Cl_-"): 7.92e-8,
-                ("Liq", "C_+"): 36.23e-8,
-                ("Liq", "A_-"): 20.64e-8,
+                ("Liq", "H_+"): 36.23e-8,
+                ("Liq", "OH_-"): 20.64e-8,
             },
-            "charge": {"Na_+": 1, "Cl_-": -1, "C_+": 1, "A_-": -1},
+            "charge": {"Na_+": 1, "Cl_-": -1, "H_+": 1, "OH_-": -1},
             "diffusivity_data": {
                 ("Liq", "Na_+"): 1.33e-9,
                 ("Liq", "Cl_-"): 2.03e-9,
-                ("Liq", "C_+"): 9.31e-9,
-                ("Liq", "A_-"): 5.27e-9,
+                ("Liq", "H_+"): 9.31e-9,
+                ("Liq", "OH_-"): 5.27e-9,
             },
         }
         m.fs.properties = MCASParameterBlock(**ion_dict)
@@ -334,26 +350,26 @@ class Test_limiting_parameters:
         m = ConcreteModel()
         m.fs = FlowsheetBlock(dynamic=False)
         ion_dict = {
-            "solute_list": ["Na_+", "Cl_-", "C_+", "A_-"],
+            "solute_list": ["Na_+", "Cl_-", "H_+", "OH_-"],
             "mw_data": {
                 "H2O": 18e-3,
                 "Na_+": 23e-3,
                 "Cl_-": 35.5e-3,
-                "C_+": 1e-3,
-                "A_-": 17.0e-3,
+                "H_+": 1e-3,
+                "OH_-": 17.0e-3,
             },
             "elec_mobility_data": {
                 ("Liq", "Na_+"): 5.19e-8,
                 ("Liq", "Cl_-"): 7.92e-8,
-                ("Liq", "C_+"): 36.23e-8,
-                ("Liq", "A_-"): 20.64e-8,
+                ("Liq", "H_+"): 36.23e-8,
+                ("Liq", "OH_-"): 20.64e-8,
             },
-            "charge": {"Na_+": 1, "Cl_-": -1, "C_+": 1, "A_-": -1},
+            "charge": {"Na_+": 1, "Cl_-": -1, "H_+": 1, "OH_-": -1},
             "diffusivity_data": {
                 ("Liq", "Na_+"): 1.33e-9,
                 ("Liq", "Cl_-"): 2.03e-9,
-                ("Liq", "C_+"): 9.31e-9,
-                ("Liq", "A_-"): 5.27e-9,
+                ("Liq", "H_+"): 9.31e-9,
+                ("Liq", "OH_-"): 5.27e-9,
             },
         }
         m.fs.properties = MCASParameterBlock(**ion_dict)
@@ -387,38 +403,38 @@ class Test_limiting_parameters:
             m.fs.unit.cell_length.fix(0.79)
             m.fs.unit.membrane_thickness["bpem"].fix(1.3e-4)
             m.fs.unit.diffus_mass["bpem"].fix((2.03 + 1.96) * 10**-9 / 2)
-            m.fs.unit.solute_diffusivity_membrane["bpem", "Na_+"].fix(
-                (1.8e-10 + 1.25e-10) / 2
-            )
-            m.fs.unit.solute_diffusivity_membrane["bpem", "Cl_-"].fix(
-                (1.8e-10 + 1.25e-10) / 2
-            )
-            m.fs.unit.solute_diffusivity_membrane["bpem", "C_+"].fix(
-                (1.8e-10 + 1.25e-10) / 2
-            )
-            m.fs.unit.solute_diffusivity_membrane["bpem", "A_-"].fix(
-                (1.8e-10 + 1.25e-10) / 2
-            )
+            # m.fs.unit.solute_diffusivity_membrane["bpem", "Na_+"].fix(
+            #     (1.8e-10 + 1.25e-10) / 2
+            # )
+            # m.fs.unit.solute_diffusivity_membrane["bpem", "Cl_-"].fix(
+            #     (1.8e-10 + 1.25e-10) / 2
+            # )
+            # m.fs.unit.solute_diffusivity_membrane["bpem", "H_+"].fix(
+            #     (1.8e-10 + 1.25e-10) / 2
+            # )
+            # m.fs.unit.solute_diffusivity_membrane["bpem", "OH_-"].fix(
+            #     (1.8e-10 + 1.25e-10) / 2
+            # )
             m.fs.unit.ion_trans_number_membrane["bpem", "Na_+"].fix(0.5)
             m.fs.unit.ion_trans_number_membrane["bpem", "Cl_-"].fix(0.5)
-            m.fs.unit.ion_trans_number_membrane["bpem", "C_+"].fix(0.1)
-            m.fs.unit.ion_trans_number_membrane["bpem", "A_-"].fix(0.1)
-            m.fs.unit.solute_diffusivity_membrane["bpem", "Na_+"].fix(
-                (1.8e-10 + 1.25e-10) / 2
-            )
-            m.fs.unit.solute_diffusivity_membrane["bpem", "Cl_-"].fix(
-                (1.8e-10 + 1.25e-10) / 2
-            )
-            m.fs.unit.solute_diffusivity_membrane["bpem", "C_+"].fix(
-                (1.8e-10 + 1.25e-10) / 2
-            )
-            m.fs.unit.solute_diffusivity_membrane["bpem", "A_-"].fix(
-                (1.8e-10 + 1.25e-10) / 2
-            )
+            m.fs.unit.ion_trans_number_membrane["bpem", "H_+"].fix(0.1)
+            m.fs.unit.ion_trans_number_membrane["bpem", "OH_-"].fix(0.1)
+            # m.fs.unit.solute_diffusivity_membrane["bpem", "Na_+"].fix(
+            #     (1.8e-10 + 1.25e-10) / 2
+            # )
+            # m.fs.unit.solute_diffusivity_membrane["bpem", "Cl_-"].fix(
+            #     (1.8e-10 + 1.25e-10) / 2
+            # )
+            # m.fs.unit.solute_diffusivity_membrane["bpem", "H_+"].fix(
+            #     (1.8e-10 + 1.25e-10) / 2
+            # )
+            # m.fs.unit.solute_diffusivity_membrane["bpem", "OH_-"].fix(
+            #     (1.8e-10 + 1.25e-10) / 2
+            # )
             m.fs.unit.ion_trans_number_membrane["bpem", "Na_+"].fix(0.5)
             m.fs.unit.ion_trans_number_membrane["bpem", "Cl_-"].fix(0.5)
-            m.fs.unit.ion_trans_number_membrane["bpem", "C_+"].fix(0.1)
-            m.fs.unit.ion_trans_number_membrane["bpem", "A_-"].fix(0.1)
+            m.fs.unit.ion_trans_number_membrane["bpem", "H_+"].fix(0.1)
+            m.fs.unit.ion_trans_number_membrane["bpem", "OH_-"].fix(0.1)
             m.fs.unit.kr["bpem"].fix(1.33 * 10**11)
             m.fs.unit.kd_zero["bpem"].fix(2 * 10**-5)
             m.fs.unit.relative_permittivity["bpem"].fix(20)
@@ -432,15 +448,15 @@ class Test_limiting_parameters:
             m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "H2O"].fix(2.40e-1)
             m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "Na_+"].fix(7.38e-1)
             m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "Cl_-"].fix(7.38e-1)
-            m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "C_+"].fix(7.38e-1)
-            m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "A_-"].fix(7.38e-1)
+            m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "H_+"].fix(7.38e-1)
+            m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "OH_-"].fix(7.38e-1)
             m.fs.unit.inlet_cem_side.pressure.fix(101325)
             m.fs.unit.inlet_cem_side.temperature.fix(298.15)
             m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "H2O"].fix(2.40e-1)
             m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "Na_+"].fix(7.38e-1)
             m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "Cl_-"].fix(7.38e-1)
-            m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "C_+"].fix(7.38e-1)
-            m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "A_-"].fix(7.38e-1)
+            m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "H_+"].fix(7.38e-1)
+            m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "OH_-"].fix(7.38e-1)
             m.fs.unit.spacer_porosity.fix(1)
             m.fs.properties.set_default_scaling(
                 "flow_mol_phase_comp", 1e1, index=("Liq", "H2O")
@@ -452,10 +468,10 @@ class Test_limiting_parameters:
                 "flow_mol_phase_comp", 1e0, index=("Liq", "Cl_-")
             )
             m.fs.properties.set_default_scaling(
-                "flow_mol_phase_comp", 1e0, index=("Liq", "C_+")
+                "flow_mol_phase_comp", 1e0, index=("Liq", "H_+")
             )
             m.fs.properties.set_default_scaling(
-                "flow_mol_phase_comp", 1e0, index=("Liq", "A_-")
+                "flow_mol_phase_comp", 1e0, index=("Liq", "OH_-")
             )
 
         # Data on limiting current and potential barrier to water splitting have been obtained from:

@@ -765,7 +765,7 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
                 )
 
             elif j in self.ion_set:
-                if not (j == "C_+" or j == "A_-"):
+                if not (j == "H_+" or j == "OH_-"):
                     if (
                         self.config.Operation_method_bpem
                         == LimitingOperationMode.Sub_limiting
@@ -882,18 +882,30 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
             doc="Mass transfer term for the aem side of the bipolar membrane",
         )
         def eq_mass_transfer_term_aem_side(self, t, p, j):
-            return (
-                self.aem_side.mass_transfer_term[t, p, j]
-                == -0.5
-                * (
-                    self.elec_migration_flux_in[t, p, j]
-                    + self.elec_migration_flux_out[t, p, j]
-                    + self.nonelec_flux_in[t, p, j]
-                    + self.nonelec_flux_out[t, p, j]
+            if j == "H_+":
+                return (
+                    self.aem_side.mass_transfer_term[t, p, j]
+                    == 0
+                    * pyunits.mol
+                    * pyunits.meter**-2
+                    * pyunits.s**-1
+                    * (self.cell_width * self.cell_length)
+                    * self.cell_pair_num
                 )
-                * (self.cell_width * self.cell_length)
-                * self.cell_pair_num
-            )
+            else:
+
+                return (
+                    self.aem_side.mass_transfer_term[t, p, j]
+                    == -0.5
+                    * (
+                        self.elec_migration_flux_in[t, p, j]
+                        + self.elec_migration_flux_out[t, p, j]
+                        + self.nonelec_flux_in[t, p, j]
+                        + self.nonelec_flux_out[t, p, j]
+                    )
+                    * (self.cell_width * self.cell_length)
+                    * self.cell_pair_num
+                )
 
         # Add constraints for mass transfer terms (cem side of the bipolar membrane)
         @self.Constraint(
@@ -903,18 +915,29 @@ class Electrodialysis0DData(InitializationMixin, UnitModelBlockData):
             doc="Mass transfer term for the cem side of the bipolar membrane channel",
         )
         def eq_mass_transfer_term_cem_side(self, t, p, j):
-            return (
-                self.cem_side.mass_transfer_term[t, p, j]
-                == 0.5
-                * (
-                    self.elec_migration_flux_in[t, p, j]
-                    + self.elec_migration_flux_out[t, p, j]
-                    + self.nonelec_flux_in[t, p, j]
-                    + self.nonelec_flux_out[t, p, j]
+            if j == "OH_-":
+                return (
+                    self.cem_side.mass_transfer_term[t, p, j]
+                    == 0
+                    * pyunits.mol
+                    * pyunits.meter**-2
+                    * pyunits.s**-1
+                    * (self.cell_width * self.cell_length)
+                    * self.cell_pair_num
                 )
-                * (self.cell_width * self.cell_length)
-                * self.cell_pair_num
-            )
+            else:
+                return (
+                    self.cem_side.mass_transfer_term[t, p, j]
+                    == 0.5
+                    * (
+                        self.elec_migration_flux_in[t, p, j]
+                        + self.elec_migration_flux_out[t, p, j]
+                        + self.nonelec_flux_in[t, p, j]
+                        + self.nonelec_flux_out[t, p, j]
+                    )
+                    * (self.cell_width * self.cell_length)
+                    * self.cell_pair_num
+                )
 
         @self.Constraint(
             self.flowsheet().time,
