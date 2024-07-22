@@ -89,8 +89,8 @@ The bipolar membrane model has multiple degrees of freedom, among which temperat
    "Temperature, inlet_aem_side", ":math:`T^AEM`", "temperature", "None", ":math:`K`", 1
    "Pressure, inlet_cem_side",":math:`p^CEM`", "temperature", "None", ":math:`Pa`", 1
    "Pressure, inlet_aem_side",":math:`p^AEM`", "temperature", "None", ":math:`Pa`", 1
-   "Component molar flow rate, inlet_cem_side", ":math:`N_{j,in}^{CEM}`", "flow_mol_phase_comp", "[t], ['Liq'], ['H2O', 'Na_+', '\Cl_-', 'H_+', 'OH_-']", ":math:`mol s^{-1}`", 5
-   "Component molar flow rate, inlet_aem_side", ":math:`N_{j, in}^{AEM}`", "flow_mol_phase_comp", "[t], ['Liq'], ['H2O', 'Na_+', '\Cl_-', 'H_+', 'OH_-']", ":math:`mol s^{-1}`", 5
+   "Component molar flow rate, inlet_cem_side", ":math:`N_{j,in}^{CEM}`", "flow_mol_phase_comp", "[t], ['Liq'], ['H2O', 'Na_+', '\Cl_-', 'H_+', 'OH_-']", ":math:`mol \, s^{-1}`", 5
+   "Component molar flow rate, inlet_aem_side", ":math:`N_{j, in}^{AEM}`", "flow_mol_phase_comp", "[t], ['Liq'], ['H2O', 'Na_+', '\Cl_-', 'H_+', 'OH_-']", ":math:`mol \, s^{-1}`", 5
    "Water transport number", ":math:`t_w`", "water_trans_number_membrane", "['bpem']", "dimensionless", 1
    "Water permeability", ":math:`L`", "water_permeability_membrane", "['bpem']", ":math:`m^{-1}s^{-1}Pa^{-1}`", 1
    "Voltage or Current \ :sup:`2`", ":math:`U` or :math:`I`", "voltage or current", "[t]", ":math:`\text{V}` or :math:`A`", 1
@@ -196,7 +196,7 @@ Both the current durrent density and potential barrier must be specified, via ``
 
 The limiting current is computed as :math:`i_{lim} = D F (C_{CEM}+C_{AEM})^2 / (\sigma \delta)`. The potential barrier calculation involves kinetics of water splitting. The rate of proton/hydroxide ion formation per unit volume is given as :math:`R_{H^+/OH^-} = [k_2(0)f(E)C_{H_2O}-k_r C_{H^+}C_{OH^-} ]`. A majority of the production occurs within the small depletion region :math:`\lambda`, thus the flux is :math:`R_{H^+/OH^-} /\lambda`. When this flux is :math:`0.1 i_{lim}` the barrier is assumed to be crossed, and the corresponding :math:`E=E_{crit}=U_{diss} \lambda` determines the potential barrier.
 
-The quantities :math:`C_{H_2O}, C_{H^+}, C_{OH^-}` are the water proton and hydroxyl concentration in :math:`mol m^-3` and are taken to be constants. :math:`f(E)` is the second Wien effect driven enhancement of the dissociation rate under applied electric field. It requires as input temperature and relative permittivity (:math:`\epsilon_r`). To close the model :math:`\lambda = E_{crit} \epsilon_0 \epsilon_r / (F \sigma)`
+The quantities :math:`C_{H_2O}, C_{H^+}, C_{OH^-}` are the water proton and hydroxyl concentration in :math:`mol m^{-3}` and are taken to be constants. :math:`f(E)` is the second Wien effect driven enhancement of the dissociation rate under applied electric field. It requires as input temperature and relative permittivity (:math:`\epsilon_r`). To close the model :math:`\lambda = E_{crit} \epsilon_0 \epsilon_r / (F \sigma)`
 
 
 
@@ -205,11 +205,11 @@ The quantities :math:`C_{H_2O}, C_{H^+}, C_{OH^-}` are the water proton and hydr
    :header: "Description", "Symbol", "Variable Name", "Index", "Units"
 
    "Diffusivity", ":math:`D`", "diffus_mass", "[bpem]", ":math:`m^2 s^{-1}`"
-   "Salt concentration, AEM side ", ":math:`C_{AEM}`", "salt_conc_aem", "[bpem]",":math:`mol m^-3`"
-   "Salt concentration, CEM side ", ":math:`C_{CEM}`", "salt_conc_cem", "[bpem]",":math:`mol m^-3`"
-   "Membrane Fixed charge ", ":math:`\sigma`", "membrane_fixed_charge", "[bpem]",":math:`mol m^-3`"
-   "Dissociation rate constant, zero electric field ", ":math:`k_2(0)`", "kd_zero", "[bpem]",":math:`s^-1`"
-   "Recombination rate constant ", ":math:`k_r`", "k_r", "[bpem]",":math:`L^1 mol^-1 s^-1`"
+   "Salt concentration, AEM side ", ":math:`C_{AEM}`", "salt_conc_aem", "[bpem]",":math:`mol m^{-3}`"
+   "Salt concentration, CEM side ", ":math:`C_{CEM}`", "salt_conc_cem", "[bpem]",":math:`mol m^{-3}`"
+   "Membrane Fixed charge ", ":math:`\sigma`", "membrane_fixed_charge", "[bpem]",":math:`mol m^{-3}`"
+   "Dissociation rate constant, zero electric field ", ":math:`k_2(0)`", "kd_zero", "[bpem]",":math:`s^{-1}`"
+   "Recombination rate constant ", ":math:`k_r`", "k_r", "[bpem]",":math:`L^1 mol^{-1} s^{-1}`"
    "Relative permittivity ", ":math:`\epsilon_r`", "relative_permittivity", "[bpem]","Non-dimensional"
 
 
@@ -224,7 +224,7 @@ This model can optionally calculate pressured drops along the flow path in the d
    " ", ":math:`p_L=` user-input constant", "`has_pressure_change == True` and `pressure_drop_method == PressureDropMethod.Experimental`"
    "Hydraulic diameter", ":math:`d_H=\frac{2db(1-\epsilon)}{d+b}`", "`hydraulic_diameter_method == HydraulicDiameterMethod.conventional`"
    " ", ":math:`d_H=\frac{4\epsilon}{\frac{2}{h}+(1-\epsilon)S_{v,sp}}`", "`hydraulic_diameter_method == HydraulicDiameterMethod.spacer_specific_area_known`"
-   "Renold number", ":math:`Re=\frac{\rho v d_H}{\mu}`", "`has_pressure_change == True` or `limiting_current_density_method == LimitingCurrentDensityMethod.Theoretical`"
+   "Reynold number", ":math:`Re=\frac{\rho v d_H}{\mu}`", "`has_pressure_change == True` or `limiting_current_density_method == LimitingCurrentDensityMethod.Theoretical`"
    "Schmidt number", ":math:`Sc=\frac{\mu}{\rho D_b}`", "`has_pressure_change == True` or `limiting_current_density_method == LimitingCurrentDensityMethod.Theoretical`"
    "Sherwood number", ":math:`Sh=0.29Re^{0.5}Sc^{0.33}`", "`has_pressure_change == True` or `limiting_current_density_method == LimitingCurrentDensityMethod.Theoretical`"
    "Darcy's frictional factor", ":math:`f=4\times 50.6\epsilon^{-7.06}Re^{-1}`", "`friction_factor_method == FrictionFactorMethod.Gurreri`"

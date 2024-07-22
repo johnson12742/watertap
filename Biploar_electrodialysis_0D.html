@@ -1,0 +1,1446 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.20.1: https://docutils.sourceforge.io/" />
+<title>Bipolar Electrodialysis (0D)</title>
+<style type="text/css">
+
+/*
+:Author: David Goodger (goodger@python.org)
+:Id: $Id: html4css1.css 8954 2022-01-20 10:10:25Z milde $
+:Copyright: This stylesheet has been placed in the public domain.
+
+Default cascading style sheet for the HTML output of Docutils.
+
+See https://docutils.sourceforge.io/docs/howto/html-stylesheets.html for how to
+customize this style sheet.
+*/
+
+/* used to remove borders from tables and images */
+.borderless, table.borderless td, table.borderless th {
+  border: 0 }
+
+table.borderless td, table.borderless th {
+  /* Override padding for "table.docutils td" with "! important".
+     The right padding separates the table cells. */
+  padding: 0 0.5em 0 0 ! important }
+
+.first {
+  /* Override more specific margin styles with "! important". */
+  margin-top: 0 ! important }
+
+.last, .with-subtitle {
+  margin-bottom: 0 ! important }
+
+.hidden {
+  display: none }
+
+.subscript {
+  vertical-align: sub;
+  font-size: smaller }
+
+.superscript {
+  vertical-align: super;
+  font-size: smaller }
+
+a.toc-backref {
+  text-decoration: none ;
+  color: black }
+
+blockquote.epigraph {
+  margin: 2em 5em ; }
+
+dl.docutils dd {
+  margin-bottom: 0.5em }
+
+object[type="image/svg+xml"], object[type="application/x-shockwave-flash"] {
+  overflow: hidden;
+}
+
+/* Uncomment (and remove this text!) to get bold-faced definition list terms
+dl.docutils dt {
+  font-weight: bold }
+*/
+
+div.abstract {
+  margin: 2em 5em }
+
+div.abstract p.topic-title {
+  font-weight: bold ;
+  text-align: center }
+
+div.admonition, div.attention, div.caution, div.danger, div.error,
+div.hint, div.important, div.note, div.tip, div.warning {
+  margin: 2em ;
+  border: medium outset ;
+  padding: 1em }
+
+div.admonition p.admonition-title, div.hint p.admonition-title,
+div.important p.admonition-title, div.note p.admonition-title,
+div.tip p.admonition-title {
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title, .code .error {
+  color: red ;
+  font-weight: bold ;
+  font-family: sans-serif }
+
+/* Uncomment (and remove this text!) to get reduced vertical space in
+   compound paragraphs.
+div.compound .compound-first, div.compound .compound-middle {
+  margin-bottom: 0.5em }
+
+div.compound .compound-last, div.compound .compound-middle {
+  margin-top: 0.5em }
+*/
+
+div.dedication {
+  margin: 2em 5em ;
+  text-align: center ;
+  font-style: italic }
+
+div.dedication p.topic-title {
+  font-weight: bold ;
+  font-style: normal }
+
+div.figure {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+div.footer, div.header {
+  clear: both;
+  font-size: smaller }
+
+div.line-block {
+  display: block ;
+  margin-top: 1em ;
+  margin-bottom: 1em }
+
+div.line-block div.line-block {
+  margin-top: 0 ;
+  margin-bottom: 0 ;
+  margin-left: 1.5em }
+
+div.sidebar {
+  margin: 0 0 0.5em 1em ;
+  border: medium outset ;
+  padding: 1em ;
+  background-color: #ffffee ;
+  width: 40% ;
+  float: right ;
+  clear: right }
+
+div.sidebar p.rubric {
+  font-family: sans-serif ;
+  font-size: medium }
+
+div.system-messages {
+  margin: 5em }
+
+div.system-messages h1 {
+  color: red }
+
+div.system-message {
+  border: medium outset ;
+  padding: 1em }
+
+div.system-message p.system-message-title {
+  color: red ;
+  font-weight: bold }
+
+div.topic {
+  margin: 2em }
+
+h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
+h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
+  margin-top: 0.4em }
+
+h1.title {
+  text-align: center }
+
+h2.subtitle {
+  text-align: center }
+
+hr.docutils {
+  width: 75% }
+
+img.align-left, .figure.align-left, object.align-left, table.align-left {
+  clear: left ;
+  float: left ;
+  margin-right: 1em }
+
+img.align-right, .figure.align-right, object.align-right, table.align-right {
+  clear: right ;
+  float: right ;
+  margin-left: 1em }
+
+img.align-center, .figure.align-center, object.align-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+table.align-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.align-left {
+  text-align: left }
+
+.align-center {
+  clear: both ;
+  text-align: center }
+
+.align-right {
+  text-align: right }
+
+/* reset inner alignment in figures */
+div.align-right {
+  text-align: inherit }
+
+/* div.align-center * { */
+/*   text-align: left } */
+
+.align-top    {
+  vertical-align: top }
+
+.align-middle {
+  vertical-align: middle }
+
+.align-bottom {
+  vertical-align: bottom }
+
+ol.simple, ul.simple {
+  margin-bottom: 1em }
+
+ol.arabic {
+  list-style: decimal }
+
+ol.loweralpha {
+  list-style: lower-alpha }
+
+ol.upperalpha {
+  list-style: upper-alpha }
+
+ol.lowerroman {
+  list-style: lower-roman }
+
+ol.upperroman {
+  list-style: upper-roman }
+
+p.attribution {
+  text-align: right ;
+  margin-left: 50% }
+
+p.caption {
+  font-style: italic }
+
+p.credits {
+  font-style: italic ;
+  font-size: smaller }
+
+p.label {
+  white-space: nowrap }
+
+p.rubric {
+  font-weight: bold ;
+  font-size: larger ;
+  color: maroon ;
+  text-align: center }
+
+p.sidebar-title {
+  font-family: sans-serif ;
+  font-weight: bold ;
+  font-size: larger }
+
+p.sidebar-subtitle {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+p.topic-title {
+  font-weight: bold }
+
+pre.address {
+  margin-bottom: 0 ;
+  margin-top: 0 ;
+  font: inherit }
+
+pre.literal-block, pre.doctest-block, pre.math, pre.code {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+pre.code .ln { color: grey; } /* line numbers */
+pre.code, code { background-color: #eeeeee }
+pre.code .comment, code .comment { color: #5C6576 }
+pre.code .keyword, code .keyword { color: #3B0D06; font-weight: bold }
+pre.code .literal.string, code .literal.string { color: #0C5404 }
+pre.code .name.builtin, code .name.builtin { color: #352B84 }
+pre.code .deleted, code .deleted { background-color: #DEB0A1}
+pre.code .inserted, code .inserted { background-color: #A3D289}
+
+span.classifier {
+  font-family: sans-serif ;
+  font-style: oblique }
+
+span.classifier-delimiter {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+span.interpreted {
+  font-family: sans-serif }
+
+span.option {
+  white-space: nowrap }
+
+span.pre {
+  white-space: pre }
+
+span.problematic {
+  color: red }
+
+span.section-subtitle {
+  /* font-size relative to parent (h1..h6 element) */
+  font-size: 80% }
+
+table.citation {
+  border-left: solid 1px gray;
+  margin-left: 1px }
+
+table.docinfo {
+  margin: 2em 4em }
+
+table.docutils {
+  margin-top: 0.5em ;
+  margin-bottom: 0.5em }
+
+table.footnote {
+  border-left: solid 1px black;
+  margin-left: 1px }
+
+table.docutils td, table.docutils th,
+table.docinfo td, table.docinfo th {
+  padding-left: 0.5em ;
+  padding-right: 0.5em ;
+  vertical-align: top }
+
+table.docutils th.field-name, table.docinfo th.docinfo-name {
+  font-weight: bold ;
+  text-align: left ;
+  white-space: nowrap ;
+  padding-left: 0 }
+
+/* "booktabs" style (no vertical lines) */
+table.docutils.booktabs {
+  border: 0px;
+  border-top: 2px solid;
+  border-bottom: 2px solid;
+  border-collapse: collapse;
+}
+table.docutils.booktabs * {
+  border: 0px;
+}
+table.docutils.booktabs th {
+  border-bottom: thin solid;
+  text-align: left;
+}
+
+h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
+h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
+  font-size: 100% }
+
+ul.auto-toc {
+  list-style-type: none }
+
+</style>
+<style type="text/css">
+
+/*
+*   math2html: convert LaTeX equations to HTML output.
+*
+*   Copyright (C) 2009,2010 Alex Fernández
+*                 2021      Günter Milde
+*
+*   Released under the terms of the `2-Clause BSD license'_, in short:
+*   Copying and distribution of this file, with or without modification,
+*   are permitted in any medium without royalty provided the copyright
+*   notice and this notice are preserved.
+*   This file is offered as-is, without any warranty.
+*
+* .. _2-Clause BSD license: http://www.spdx.org/licenses/BSD-2-Clause
+*
+*   Based on eLyXer: convert LyX source files to HTML output.
+*   http://elyxer.nongnu.org/
+*
+*
+* CSS file for LaTeX formulas.
+*
+* References: http://www.zipcon.net/~swhite/docs/math/math.html
+*             http://www.cs.tut.fi/~jkorpela/math/
+*/
+
+/* Formulas */
+.formula {
+	text-align: center;
+	margin: 1.2em 0;
+	line-height: 1.4;
+}
+span.formula {
+	white-space: nowrap;
+}
+div.formula {
+	padding: 0.5ex;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+/* Basic features */
+a.eqnumber {
+	display: inline-block;
+	float: right;
+	clear: right;
+	font-weight: bold;
+}
+span.unknown {
+	color: #800000;
+}
+span.ignored, span.arraydef {
+	display: none;
+}
+.phantom {
+	visibility: hidden;
+}
+.formula i {
+	letter-spacing: 0.1ex;
+}
+
+/* Alignment */
+.align-left, .align-l {
+	text-align: left;
+}
+.align-right, .align-r {
+	text-align: right;
+}
+.align-center, .align-c {
+	text-align: center;
+}
+
+/* Structures */
+span.hspace {
+	display: inline-block;
+}
+span.overline, span.bar {
+	text-decoration: overline;
+}
+.fraction, .fullfraction, .textfraction {
+	display: inline-block;
+	vertical-align: middle;
+	text-align: center;
+}
+span.formula .fraction,
+.textfraction,
+span.smallmatrix {
+	font-size: 80%;
+	line-height: 1;
+}
+span.numerator {
+	display: block;
+	line-height: 1;
+}
+span.denominator {
+	display: block;
+	line-height: 1;
+	padding: 0ex;
+	border-top: thin solid;
+}
+.formula sub, .formula sup {
+	font-size: 80%;
+}
+sup.numerator, sup.unit {
+	vertical-align: 80%;
+}
+sub.denominator, sub.unit {
+	vertical-align: -20%;
+}
+span.smallsymbol {
+	font-size: 75%;
+	line-height: 75%;
+}
+span.boldsymbol {
+	font-weight: bold;
+}
+span.sqrt {
+	display: inline-block;
+	vertical-align: middle;
+	padding: 0.1ex;
+}
+sup.root {
+	position: relative;
+	left: 1.4ex;
+}
+span.radical {
+	display: inline-block;
+	padding: 0ex;
+	/* font-size: 160%; for DejaVu, not required with STIX */
+	line-height: 100%;
+	vertical-align: top;
+	vertical-align: middle;
+}
+
+span.root {
+	display: inline-block;
+	border-top: thin solid;
+	padding: 0ex;
+	vertical-align: middle;
+}
+div.formula .bigoperator,
+.displaystyle .bigoperator,
+.displaystyle .bigoperator {
+	line-height: 120%;
+	font-size: 140%;
+	padding-right: 0.2ex;
+}
+span.fraction .bigoperator,
+span.scriptstyle .bigoperator {
+	line-height: inherit;
+	font-size: inherit;
+	padding-right: 0;
+}
+span.bigdelimiter {
+	display: inline-block;
+}
+span.bigdelimiter.size1 {
+	transform: scale(1, 1.2);
+	line-height: 1.2;
+}
+span.bigdelimiter.size2 {
+	transform: scale(1, 1.62);
+	line-height: 1.62%;
+
+}
+span.bigdelimiter.size3 {
+	transform: scale(1, 2.05);
+	line-height: 2.05%;
+}
+span.bigdelimiter.size4 {
+	transform: scale(1, 2.47);
+	line-height: 2.47%;
+}
+/* vertically stacked sub and superscript */
+span.scripts {
+	display: inline-table;
+	vertical-align: middle;
+	padding-right: 0.2ex;
+}
+.script {
+	display: table-row;
+	text-align: left;
+	line-height: 150%;
+}
+span.limits {
+	display: inline-table;
+	vertical-align: middle;
+}
+.limit {
+	display: table-row;
+	line-height: 99%;
+}
+sup.limit, sub.limit {
+	line-height: 100%;
+}
+span.embellished,
+span.embellished > .base {
+	display: inline-block;
+}
+span.embellished > sup,
+span.embellished > sub {
+	display: inline-block;
+	font-size: 100%;
+	position: relative;
+	bottom: 0.3em;
+	width: 0px;
+}
+span.embellished > sub {
+	top: 0.4em;
+}
+
+/* Environments */
+span.array, span.bracketcases, span.binomial, span.environment {
+	display: inline-table;
+	text-align: center;
+	vertical-align: middle;
+}
+span.arrayrow, span.binomrow {
+	display: table-row;
+	padding: 0;
+	border: 0;
+}
+span.arraycell, span.bracket, span.case, span.binomcell, span.environmentcell {
+	display: table-cell;
+	padding: 0ex 0.2ex;
+	line-height: 1; /* 99%; */
+	border: 0ex;
+}
+.environment.align > .arrayrow > .arraycell.align-l {
+	padding-right: 2em;
+}
+
+/* Inline binomials */
+span.binom {
+	display: inline-block;
+	vertical-align: middle;
+	text-align: center;
+	font-size: 80%;
+}
+span.binomstack {
+	display: block;
+	padding: 0em;
+}
+
+/* Over- and underbraces */
+span.overbrace {
+	border-top: 2pt solid;
+}
+span.underbrace {
+	border-bottom: 2pt solid;
+}
+
+/* Stackrel */
+span.stackrel {
+	display: inline-block;
+	text-align: center;
+}
+span.upstackrel {
+	display: block;
+	padding: 0em;
+	font-size: 80%;
+	line-height: 64%;
+	position: relative;
+	top: 0.15em;
+
+}
+span.downstackrel {
+	display: block;
+	vertical-align: bottom;
+	padding: 0em;
+}
+
+/* Fonts */
+.formula {
+	font-family: STIX, "DejaVu Serif", "DejaVu Math TeX Gyre", serif;
+}
+span.radical,   /* ensure correct size of square-root sign */
+span.integral { /* upright integral signs for better alignment of indices */
+	font-family: "STIXIntegralsUp", STIX;
+	/* font-size: 115%; match apparent size with DejaVu */
+}
+span.bracket {
+  /* some "STIX" and "DejaVu Math TeX Gyre" bracket pieces don't fit */
+	font-family: "DejaVu Serif", serif;
+}
+span.mathsf, span.textsf {
+	font-family: sans-serif;
+}
+span.mathrm, span.textrm {
+	font-family: STIX, "DejaVu Serif", "DejaVu Math TeX Gyre", serif;
+}
+span.mathtt, span.texttt {
+	font-family: monospace;
+}
+span.text, span.textnormal,
+span.mathsf, span.mathtt, span.mathrm {
+	font-style: normal;
+}
+span.fraktur {
+	font-family: "Lucida Blackletter", eufm10, blackletter;
+}
+span.blackboard {
+	font-family: Blackboard, msbm10, serif;
+}
+span.scriptfont {
+	font-family: "Monotype Corsiva", "Apple Chancery", "URW Chancery L", cursive;
+	font-style: italic;
+}
+span.mathscr {
+  font-family: MathJax_Script, rsfs10,  cursive;
+  font-style: italic;
+}
+span.textsc {
+	font-variant: small-caps;
+}
+span.textsl {
+	font-style: oblique;
+}
+
+/* Colors */
+span.colorbox {
+	display: inline-block;
+	padding: 5px;
+}
+span.fbox {
+	display: inline-block;
+	border: thin solid black;
+	padding: 2px;
+}
+span.boxed, span.framebox {
+	display: inline-block;
+	border: thin solid black;
+	padding: 5px;
+}
+
+</style>
+</head>
+<body>
+<div class="document" id="bipolar-electrodialysis-0d">
+<h1 class="title">Bipolar Electrodialysis (0D)</h1>
+
+<div class="section" id="introduction">
+<h1>Introduction</h1>
+<p>Bipolar electrodialysis, an electrochemical separation technology, has primarily been used to generate acids and bases
+from waste salts produced in water purification. By providing in-situ access to valuable raw materials bipolar membranes can
+significantly reduce the total cost of the operation. To easily access the waste salts of water purification a cell pair
+in the stack consists of anion exchange membrane and cation exchange membrane along side the bipolar membrane. This cell
+stack is shown in Figure 1. However, monopolar electrodialysis membranes have already been implemented in WaterTap and
+so the focus will be on the biploar membrane. The <strong>AEM</strong> and <strong>CEM</strong> side channels, that produce base and acid
+respectively, refer to the biploar membrane and the channel that they are facing. More overview of the bipolar
+electrodialysis technology can be found in the <em>References</em>.</p>
+<div class="figure align-center">
+<img alt="BPEDdiagram.png" src="BPEDdiagram.png" style="width: 600px;" />
+<p class="caption">Figure 1. Schematic representation of a bipolar electrodialysis unit</p>
+</div>
+<p>One bipolar membrane along with the <strong>AEM</strong> and <strong>CEM</strong> side channels can thus be treated as a modeling unit that can
+multiply to larger-scale systems. The presented bipolar electrodialysis model establishes mathematical descriptions of
+ion and water transport across the membrane along with water splitting. This can be coupled with the electrodialysis
+and expanded to simulate a stack with a specified cell-pair number. Modelled transfer mechanisms include
+electrical migration, diffusion of ions, osmosis, electroosmosis, and water splitting. The following are the key
+assumptions made:</p>
+<ul class="simple">
+<li>The <strong>AEM</strong> and <strong>CEM</strong> side channels have identical geometry.</li>
+<li>For each channel, component fluxes are uniform in the bulk solutions (the 0-dimensional assumption)  and are set as the average of inlet and outlet of each channel.</li>
+<li>Steady state: all variables are independent on time.</li>
+<li>Co-current flow operation.</li>
+<li>Ideality assumptions: activity, osmotic, and van't Hoff coefficients are set at one.</li>
+<li>All ion-exchange membrane properties (ion and water transport number, resistance, permeability) are constant.</li>
+<li>Detailed concentration gradient effect at membrane-water interfaces is neglected.</li>
+<li>Constant pressure and temperature through each channel.</li>
+</ul>
+</div>
+<div class="section" id="control-volumes">
+<h1>Control Volumes</h1>
+<p>This model has two control volumes for the concentrate and diluate channels.</p>
+<ul class="simple">
+<li><strong>AEM</strong> side channel</li>
+<li><strong>CEM</strong> side channel</li>
+</ul>
+</div>
+<div class="section" id="ports">
+<h1>Ports</h1>
+<p>On the two control volumes, this model provides four ports (Pyomo notation in parenthesis):</p>
+<ul class="simple">
+<li>inlet_aem_side (inlet)</li>
+<li>outlet_aem_side (outlet)</li>
+<li>inlet_cem_side (inlet)</li>
+<li>outlet_cem_side (outlet)</li>
+</ul>
+</div>
+<div class="section" id="sets">
+<h1>Sets</h1>
+<p>This model can simulate the water splitting and the transport of multiple species. All solution components ( H<sub>2</sub>O, neutral solutes, and ions, including Proton and Hydroxide ion) form a Pyomo set in the model.
+For a clear model demonstration, <strong>this document uses a NaCl water solution along with the products of water splitting, H_+ and OH_-, hereafter.</strong></p>
+<p>This model can mathematically take a multi-component (i.e., &gt; one salt molecule to be treated) as an input; nevertheless a multi-component solution creates unknown or difficult-to-specify parameters, e.g., the electrical transport numbers through membranes,  the multi-ion diffusivity, etc., and physical relationships, which may result in ill-posed or ill-conditioned problems challenging the models' numerical solutions.  While we continuously work on advancing our models to absorb new principles revealed by progressing research, we advise the users be very <strong>cautious</strong> with simulating multi-component systems by this programmed model for aspects stated above.</p>
+<table border="1" class="docutils">
+<caption><strong>Table 1.</strong> List of Set</caption>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Description</th>
+<th class="head">Symbol</th>
+<th class="head">Indices</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>Time</td>
+<td><span class="formula"><i>t</i></span></td>
+<td>[t] ([0])<sup>1</sup></td>
+</tr>
+<tr><td>Phase</td>
+<td><span class="formula"><i>p</i></span></td>
+<td>['Liq']</td>
+</tr>
+<tr><td>Component</td>
+<td><span class="formula"><i>j</i></span></td>
+<td>['H2O', 'Na_+', 'Cl_-', 'H_+', '<a href="#system-message-2"><span class="problematic" id="problematic-2">OH_</span></a>-']</td>
+</tr>
+<tr><td>Ion</td>
+<td><span class="formula"><i>j</i></span></td>
+<td>['Na_+', 'Cl_-', 'H_+', '<a href="#system-message-3"><span class="problematic" id="problematic-3">OH_</span></a>-']  <sup>2</sup></td>
+</tr>
+<tr><td>Membrane</td>
+<td>n/a</td>
+<td>['bpem']</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><strong>Notes</strong></dt>
+<dd><p class="first"><sup>1</sup> The time set index is set as [0] in this steady-state model and is reserved majorly for the future extension
+to a dynamic model.</p>
+<p class="last"><sup>2</sup> &quot;Ion&quot; is a subset of &quot;Component&quot; and uses the same symbol j.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="degrees-of-freedom">
+<h1>Degrees of Freedom</h1>
+<p>The bipolar membrane model has multiple degrees of freedom, among which temperature, pressure, and component molar flow rate are state variables that are fixed as initial conditions. The rest are parameters that should be provided in order to fully solve the model. The exact degrees of freedom depend on the mode of operation. For the simplest case where no water splitting occurs and the bipolar membrane acts like a simple electrodialysis memrbane these are:</p>
+<table border="1" class="docutils">
+<caption><strong>Table 2.</strong> List of Degree of Freedom (DOF)</caption>
+<colgroup>
+<col width="17%" />
+<col width="17%" />
+<col width="17%" />
+<col width="17%" />
+<col width="17%" />
+<col width="17%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Description</th>
+<th class="head">Symbol</th>
+<th class="head">Variable Name</th>
+<th class="head">Index</th>
+<th class="head">Units</th>
+<th class="head">DOF Number  <sup>1</sup></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>Temperature, inlet_cem_side</td>
+<td><span class="formula"><i>T</i><sup><i>CEM</i></sup></span></td>
+<td>temperature</td>
+<td>None</td>
+<td><span class="formula"><i>K</i></span></td>
+<td>1</td>
+</tr>
+<tr><td>Temperature, inlet_aem_side</td>
+<td><span class="formula"><i>T</i><sup><i>AEM</i></sup></span></td>
+<td>temperature</td>
+<td>None</td>
+<td><span class="formula"><i>K</i></span></td>
+<td>1</td>
+</tr>
+<tr><td>Pressure, inlet_cem_side</td>
+<td><span class="formula"><i>p</i><sup><i>CEM</i></sup></span></td>
+<td>temperature</td>
+<td>None</td>
+<td><span class="formula"><i>Pa</i></span></td>
+<td>1</td>
+</tr>
+<tr><td>Pressure, inlet_aem_side</td>
+<td><span class="formula"><i>p</i><sup><i>AEM</i></sup></span></td>
+<td>temperature</td>
+<td>None</td>
+<td><span class="formula"><i>Pa</i></span></td>
+<td>1</td>
+</tr>
+<tr><td>Component molar flow rate, inlet_cem_side</td>
+<td><span class="formula"><i>N</i><span class="scripts"><sup class="script"><i>CEM</i></sup><sub class="script"><i>j</i>, <i>in</i></sub></span></span></td>
+<td>flow_mol_phase_comp</td>
+<td>[t], ['Liq'], ['H2O', 'Na_+', 'Cl_-', 'H_+', '<a href="#system-message-4"><span class="problematic" id="problematic-4">OH_</span></a>-']</td>
+<td><span class="formula"><i>mol</i><i>s</i><sup> − 1</sup></span></td>
+<td>5</td>
+</tr>
+<tr><td>Component molar flow rate, inlet_aem_side</td>
+<td><span class="formula"><i>N</i><span class="scripts"><sup class="script"><i>AEM</i></sup><sub class="script"><i>j</i>, <i>in</i></sub></span></span></td>
+<td>flow_mol_phase_comp</td>
+<td>[t], ['Liq'], ['H2O', 'Na_+', 'Cl_-', 'H_+', '<a href="#system-message-5"><span class="problematic" id="problematic-5">OH_</span></a>-']</td>
+<td><span class="formula"><i>mol</i><i>s</i><sup> − 1</sup></span></td>
+<td>5</td>
+</tr>
+<tr><td>Water transport number</td>
+<td><span class="formula"><i>t</i><sub><i>w</i></sub></span></td>
+<td>water_trans_number_membrane</td>
+<td>['bpem']</td>
+<td>dimensionless</td>
+<td>1</td>
+</tr>
+<tr><td>Water permeability</td>
+<td><span class="formula"><i>L</i></span></td>
+<td>water_permeability_membrane</td>
+<td>['bpem']</td>
+<td><span class="formula"><i>m</i><sup> − 1</sup><i>s</i><sup> − 1</sup><i>Pa</i><sup> − 1</sup></span></td>
+<td>1</td>
+</tr>
+<tr><td>Voltage or Current <sup>2</sup></td>
+<td><span class="formula"><i>U</i></span> or <span class="formula"><i>I</i></span></td>
+<td>voltage or current</td>
+<td>[t]</td>
+<td><span class="formula"><span class="text">V</span></span> or <span class="formula"><i>A</i></span></td>
+<td>1</td>
+</tr>
+<tr><td>Electrode areal resistance</td>
+<td><span class="formula"><i>r</i><sub><i>el</i></sub></span></td>
+<td>electrodes_resistance</td>
+<td>[t]</td>
+<td><span class="formula">Ω<i>m</i><sup>2</sup></span></td>
+<td>1</td>
+</tr>
+<tr><td>Cell pair number</td>
+<td><span class="formula"><i>n</i></span></td>
+<td>cell_pair_num</td>
+<td>None</td>
+<td>dimensionless</td>
+<td>1</td>
+</tr>
+<tr><td>Current utilization coefficient</td>
+<td><span class="formula"><i>ξ</i></span></td>
+<td>current_utilization</td>
+<td>None</td>
+<td>dimensionless</td>
+<td>1</td>
+</tr>
+<tr><td>Spacer thickness</td>
+<td><span class="formula"><i>s</i></span></td>
+<td>spacer_thickness</td>
+<td>none</td>
+<td><span class="formula"><i>m</i></span></td>
+<td>1</td>
+</tr>
+<tr><td>Membrane areal resistance</td>
+<td><span class="formula"><i>r</i></span></td>
+<td>membrane_surface_resistance</td>
+<td>['cem', 'aem']</td>
+<td><span class="formula">Ω<i>m</i><sup>2</sup></span></td>
+<td>2</td>
+</tr>
+<tr><td>Cell width</td>
+<td><span class="formula"><i>b</i></span></td>
+<td>cell_width</td>
+<td>None</td>
+<td><span class="formula"><span class="text">m</span></span></td>
+<td>1</td>
+</tr>
+<tr><td>Cell length</td>
+<td><span class="formula"><i>l</i></span></td>
+<td>cell_length</td>
+<td>None</td>
+<td><span class="formula"><span class="text">m</span></span></td>
+<td>1</td>
+</tr>
+<tr><td>Thickness of ion exchange membranes</td>
+<td><span class="formula"><i>δ</i></span></td>
+<td>membrane_thickness</td>
+<td>['bpem']</td>
+<td><span class="formula"><i>m</i></span></td>
+<td>1</td>
+</tr>
+<tr><td>transport number of ions in the membrane phase</td>
+<td><span class="formula"><i>t</i><sub><i>j</i></sub></span></td>
+<td>ion_trans_number_membrane</td>
+<td>['bpem'], ['Na_+', 'Cl_-', 'H_+', '<a href="#system-message-6"><span class="problematic" id="problematic-6">OH_</span></a>-']</td>
+<td>dimensionless</td>
+<td>4</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><strong>Note</strong></dt>
+<dd><p class="first"><sup>1</sup> DOF number takes account of the indices of the corresponding parameter.</p>
+<p class="last"><sup>2</sup> A user should provide either current or voltage as the electrical input, in correspondence to the &quot;Constant_Current&quot; or &quot;Constant_Voltage&quot; treatment mode</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="solution-component-information">
+<h1>Solution component information</h1>
+<p>To fully construct solution properties, users need to provide basic component information of the feed solution to use
+this model. Below is a sample:</p>
+<pre class="code literal-block">
+ion_dict = {
+         &quot;solute_list&quot;: [&quot;Na_+&quot;, &quot;Cl_-&quot;, &quot;H_+&quot;, &quot;OH_-&quot;],
+         &quot;mw_data&quot;: {
+             &quot;H2O&quot;: 18e-3,
+             &quot;Na_+&quot;: 23e-3,
+             &quot;Cl_-&quot;: 35.5e-3,
+             &quot;H_+&quot;: 1e-3,
+             &quot;OH_-&quot;: 17.0e-3,
+         },
+         &quot;elec_mobility_data&quot;: {
+             (&quot;Liq&quot;, &quot;Na_+&quot;): 5.19e-8,
+             (&quot;Liq&quot;, &quot;Cl_-&quot;): 7.92e-8,
+             (&quot;Liq&quot;, &quot;H_+&quot;): 36.23e-8,
+             (&quot;Liq&quot;, &quot;OH_-&quot;): 20.64e-8,
+         },
+         &quot;charge&quot;: {&quot;Na_+&quot;: 1, &quot;Cl_-&quot;: -1, &quot;H_+&quot;: 1, &quot;OH_-&quot;: -1},
+         &quot;diffusivity_data&quot;: {
+             (&quot;Liq&quot;, &quot;Na_+&quot;): 1.33e-9,
+             (&quot;Liq&quot;, &quot;Cl_-&quot;): 2.03e-9,
+             (&quot;Liq&quot;, &quot;H_+&quot;): 9.31e-9,
+             (&quot;Liq&quot;, &quot;OH_-&quot;): 5.27e-9,
+         },
+     }
+</pre>
+<p>This model, by default, uses H<sub>2</sub>O  as the solvent of the feed solution.</p>
+<p>Information regarding the property package this unit model relies on can be found here:</p>
+<p><a href="#system-message-1"><span class="problematic" id="problematic-1">:py:mod:`watertap.property_models.ion_DSPMDE_prop_pack`</span></a></p>
+<div class="system-message" id="system-message-1">
+<p class="system-message-title">System Message: ERROR/3 (<tt class="docutils">C:/Users/jjd/PycharmProjects/Watertap_development/watertap/Biploar_electrodialysis_0D.rst</tt>, line 148); <em><a href="#problematic-1">backlink</a></em></p>
+Unknown interpreted text role &quot;py:mod&quot;.</div>
+</div>
+<div class="section" id="sub-limiting-operation">
+<h1>Sub-limiting operation</h1>
+<p>The simplest bipolar membrane operation is when the current through the channel is below the limiting current. To use this add <tt class="docutils literal"><span class="pre">Operation_method_bpem=&quot;Sub_limiting&quot;</span></tt> to the configuration. In this mode there is no water splitting and the membrane acts effectively like its monopolar equivalent. The Mass balance equations are summarized in <strong>Table3</strong>. Further details on these can be found in the <em>References</em>.</p>
+<table border="1" class="docutils">
+<caption><strong>Table 3</strong> Mass Balance Equations</caption>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Description</th>
+<th class="head">Equation</th>
+<th class="head">Index set</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>Component mass balance</td>
+<td><span class="formula"><i>N</i><span class="scripts"><sup class="script"><i>CEM</i> <i>or</i> <i>AEM</i></sup><sub class="script"><i>j</i>, <i>in</i></sub></span> − <i>N</i><span class="scripts"><sup class="script"><i>CEM</i> <i>or</i> <i>AEM</i></sup><sub class="script"><i>j</i>, <i>out</i></sub></span> + <i>J</i><span class="scripts"><sup class="script"><i>CEM</i> <i>or</i> <i>AEM</i></sup><sub class="script"><i>j</i></sub></span><i>bl</i> = 0</span></td>
+<td><span class="formula"><i>j</i> ∈ <span class="stretchy">[</span>’<i>H</i><sub>2</sub><i>O</i>’, ’<i>Na</i><sup> + </sup>’, ’<i>Cl</i><sup> − </sup>’<span class="stretchy">]</span></span></td>
+</tr>
+<tr><td>mass transfer flux, CEM side, solute</td>
+<td><span class="formula"><i>J</i><span class="scripts"><sup class="script"><i>C</i></sup><sub class="script"><i>j</i></sub></span> = <i>t</i><span class="scripts"><sup class="script"><i>bpem</i></sup><sub class="script"><i>j</i></sub></span><span class="fraction"><span class="ignored">(</span><span class="numerator"><i>ξ</i><i>i</i></span><span class="ignored">)/(</span><span class="denominator"><i>z</i><sub><i>j</i></sub><i>F</i></span><span class="ignored">)</span></span></span></td>
+<td><span class="formula"><i>j</i> ∈ <span class="stretchy">[</span>’<i>Na</i><sup> + </sup>’, ’<i>Cl</i><sup> − </sup>’<span class="stretchy">]</span></span></td>
+</tr>
+<tr><td>mass transfer flux, AEM side, solute</td>
+<td><span class="formula"><i>J</i><span class="scripts"><sup class="script"><i>C</i></sup><sub class="script"><i>j</i></sub></span> =  − <i>t</i><span class="scripts"><sup class="script"><i>bpem</i></sup><sub class="script"><i>j</i></sub></span><span class="fraction"><span class="ignored">(</span><span class="numerator"><i>ξ</i><i>i</i></span><span class="ignored">)/(</span><span class="denominator"><i>z</i><sub><i>j</i></sub><i>F</i></span><span class="ignored">)</span></span></span></td>
+<td><span class="formula"><i>j</i> ∈ <span class="stretchy">[</span>’<i>Na</i><sup> + </sup>’, ’<i>Cl</i><sup> − </sup>’<span class="stretchy">]</span></span></td>
+</tr>
+<tr><td>mass transfer flux, CEM/AEM sides, Water ions</td>
+<td><span class="formula"><i>J</i><span class="scripts"><sup class="script"><i>C</i></sup><sub class="script"><i>j</i></sub></span> = 0</span></td>
+<td><span class="formula"><i>j</i> ∈ <span class="stretchy">[</span>’<i>H</i><sup> + </sup>’, ’<i>OH</i><sup> − </sup>’<span class="stretchy">]</span></span></td>
+</tr>
+<tr><td>mass transfer flux, CEM side H<sub>2</sub>O</td>
+<td><span class="formula"><i>J</i><span class="scripts"><sup class="script"><i>C</i></sup><sub class="script"><i>j</i></sub></span> = <i>t</i><span class="scripts"><sup class="script"><i>bpem</i></sup><sub class="script"><i>w</i></sub></span><span class="array"><span class="arrayrow"><span class="bracket align-left">⎛</span></span><span class="arrayrow"><span class="bracket align-left">⎝</span></span></span><span class="fraction"><span class="ignored">(</span><span class="numerator"><i>i</i></span><span class="ignored">)/(</span><span class="denominator"><i>F</i></span><span class="ignored">)</span></span><span class="array"><span class="arrayrow"><span class="bracket align-right">⎞</span></span><span class="arrayrow"><span class="bracket align-right">⎠</span></span></span> + <span class="stretchy">(</span><i>L</i><sup><i>bpem</i></sup><span class="stretchy">)</span><span class="stretchy">(</span><i>p</i><span class="scripts"><sup class="script"><i>CEM</i></sup><sub class="script"><i>osm</i></sub></span> − <i>p</i><span class="scripts"><sup class="script"><i>AEM</i></sup><sub class="script"><i>osm</i></sub></span><span class="stretchy">)</span><span class="array"><span class="arrayrow"><span class="bracket align-left">⎛</span></span><span class="arrayrow"><span class="bracket align-left">⎝</span></span></span><span class="fraction"><span class="ignored">(</span><span class="numerator"><i>ρ</i><sub><i>w</i></sub></span><span class="ignored">)/(</span><span class="denominator"><i>M</i><sub><i>w</i></sub></span><span class="ignored">)</span></span><span class="array"><span class="arrayrow"><span class="bracket align-right">⎞</span></span><span class="arrayrow"><span class="bracket align-right">⎠</span></span></span></span></td>
+<td><span class="formula"><i>j</i> ∈ <span class="stretchy">[</span>’<i>H</i><sub>2</sub><i>O</i>’<span class="stretchy">]</span></span></td>
+</tr>
+<tr><td>mass transfer flux, AEM side, H<sub>2</sub>O</td>
+<td><span class="formula"><i>J</i><span class="scripts"><sup class="script"><i>C</i></sup><sub class="script"><i>j</i></sub></span> =  − <i>t</i><span class="scripts"><sup class="script"><i>bpem</i></sup><sub class="script"><i>w</i></sub></span><span class="array"><span class="arrayrow"><span class="bracket align-left">⎛</span></span><span class="arrayrow"><span class="bracket align-left">⎝</span></span></span><span class="fraction"><span class="ignored">(</span><span class="numerator"><i>i</i></span><span class="ignored">)/(</span><span class="denominator"><i>F</i></span><span class="ignored">)</span></span><span class="array"><span class="arrayrow"><span class="bracket align-right">⎞</span></span><span class="arrayrow"><span class="bracket align-right">⎠</span></span></span> − <span class="stretchy">(</span><i>L</i><sup><i>bpem</i></sup><span class="stretchy">)</span><span class="stretchy">(</span><i>p</i><span class="scripts"><sup class="script"><i>CEM</i></sup><sub class="script"><i>osm</i></sub></span> − <i>p</i><span class="scripts"><sup class="script"><i>AEM</i></sup><sub class="script"><i>osm</i></sub></span><span class="stretchy">)</span><span class="array"><span class="arrayrow"><span class="bracket align-left">⎛</span></span><span class="arrayrow"><span class="bracket align-left">⎝</span></span></span><span class="fraction"><span class="ignored">(</span><span class="numerator"><i>ρ</i><sub><i>w</i></sub></span><span class="ignored">)/(</span><span class="denominator"><i>M</i><sub><i>w</i></sub></span><span class="ignored">)</span></span><span class="array"><span class="arrayrow"><span class="bracket align-right">⎞</span></span><span class="arrayrow"><span class="bracket align-right">⎠</span></span></span></span></td>
+<td><span class="formula"><i>j</i> ∈ <span class="stretchy">[</span>’<i>H</i><sub>2</sub><i>O</i>’<span class="stretchy">]</span></span></td>
+</tr>
+</tbody>
+</table>
+<p>The potential drop has an additional component <span class="formula"><i>U</i> = <i>i</i><i>r</i><sub><i>tot</i></sub></span></p>
+<table border="1" class="docutils">
+<caption><strong>Table 4</strong> Electrical and Performance Equations</caption>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Description</th>
+<th class="head">Equation</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>Current density</td>
+<td><span class="formula"><i>i</i> = <span class="fraction"><span class="ignored">(</span><span class="numerator"><i>I</i></span><span class="ignored">)/(</span><span class="denominator"><i>bl</i></span><span class="ignored">)</span></span></span></td>
+</tr>
+<tr><td>Ohm's Law</td>
+<td><span class="formula"><i>U</i> = <i>i</i><i>r</i><sub><i>tot</i></sub></span></td>
+</tr>
+<tr><td>Resistance calculation</td>
+<td><span class="formula"><i>r</i><sub><i>tot</i></sub> = <i>n</i><span class="stretchy">(</span><i>r</i><sup><i>cem</i></sup> + <i>r</i><sup><i>aem</i></sup><span class="stretchy">)</span> + <i>r</i><sub><i>el</i></sub></span></td>
+</tr>
+<tr><td>Electrical power consumption</td>
+<td><span class="formula"><i>P</i> = <i>UI</i></span></td>
+</tr>
+<tr><td>Water-production-specific power consumption</td>
+<td><span class="formula"><i>P</i><sub><i>Q</i></sub> = <span class="fraction"><span class="ignored">(</span><span class="numerator"><i>UI</i></span><span class="ignored">)/(</span><span class="denominator">3.6×10<sup>6</sup><i>nQ</i><span class="scripts"><sup class="script"><i>D</i></sup><sub class="script"><i>out</i></sub></span></span><span class="ignored">)</span></span></span></td>
+</tr>
+<tr><td>Overall current efficiency</td>
+<td><span class="formula"><i>I</i><i>η</i> = <span class="limits"><span class="limit"><span class="bigoperator">∑</span></span></span><sub><i>j</i> ∈ [<i>cation</i>]</sub><span class="stretchy">[</span><span class="stretchy">(</span><i>N</i><span class="scripts"><sup class="script"><i>AEM</i></sup><sub class="script"><i>j</i>, <i>in</i></sub></span> − <i>N</i><span class="scripts"><sup class="script"><i>AEM</i></sup><sub class="script"><i>j</i>, <i>out</i></sub></span><span class="stretchy">)</span><i>z</i><sub><i>j</i></sub><i>F</i><span class="stretchy">]</span></span></td>
+</tr>
+</tbody>
+</table>
+<p>All equations are coded as &quot;constraints&quot; (Pyomo). Isothermal and isobaric conditions apply.</p>
+</div>
+<div class="section" id="water-splitting-operation">
+<h1>Water splitting operation</h1>
+<p>To achieve water splitting the applied current must be higher than the limiting current density (<span class="formula"><i>i</i><sub><i>lim</i></sub></span>). To access this configuration add <tt class="docutils literal"><span class="pre">Operation_method_bpem=&quot;Over_limiting&quot;</span></tt>. The modified fluxes are shown in <strong>Table4</strong></p>
+<table border="1" class="docutils">
+<caption><strong>Table 4</strong> Mass Balance Equations -Water splitting
+ :header: &quot;Description&quot;, &quot;Equation&quot;, &quot;Index set&quot;</caption>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>mass transfer flux, CEM, solute</td>
+<td><span class="formula"><i>J</i><span class="scripts"><sup class="script"><i>C</i></sup><sub class="script"><i>j</i></sub></span> = <i>t</i><span class="scripts"><sup class="script"><i>bpem</i></sup><sub class="script"><i>j</i></sub></span><span class="fraction"><span class="ignored">(</span><span class="numerator"><i>ξ</i><i>i</i><sub><i>lim</i></sub></span><span class="ignored">)/(</span><span class="denominator"><i>z</i><sub><i>j</i></sub><i>F</i></span><span class="ignored">)</span></span></span></td>
+<td><span class="formula"><i>j</i> ∈ <span class="stretchy">[</span>’<i>Na</i><sup> + </sup>’, ’<i>Cl</i><sup> − </sup>’<span class="stretchy">]</span></span></td>
+</tr>
+<tr><td>mass transfer flux, AEM, solute</td>
+<td><span class="formula"><i>J</i><span class="scripts"><sup class="script"><i>C</i></sup><sub class="script"><i>j</i></sub></span> =  − <i>t</i><span class="scripts"><sup class="script"><i>bpem</i></sup><sub class="script"><i>j</i></sub></span><span class="fraction"><span class="ignored">(</span><span class="numerator"><i>ξ</i><i>i</i><sub><i>lim</i></sub></span><span class="ignored">)/(</span><span class="denominator"><i>z</i><sub><i>j</i></sub><i>F</i></span><span class="ignored">)</span></span></span></td>
+<td><span class="formula"><i>j</i> ∈ <span class="stretchy">[</span>’<i>Na</i><sup> + </sup>’, ’<i>Cl</i><sup> − </sup>’<span class="stretchy">]</span></span></td>
+</tr>
+<tr><td>mass transfer flux, CEM, Water ions</td>
+<td><span class="formula"><i>J</i><span class="scripts"><sup class="script"><i>C</i></sup><sub class="script"><i>j</i></sub></span> = <span class="fraction"><span class="ignored">(</span><span class="numerator"><i>i</i> − <i>i</i><sub><i>lim</i></sub></span><span class="ignored">)/(</span><span class="denominator"><i>z</i><sub><i>j</i></sub><i>F</i></span><span class="ignored">)</span></span></span></td>
+<td><span class="formula"><i>j</i> ∈ <span class="stretchy">[</span>’<i>H</i><sup> + </sup>’<span class="stretchy">]</span></span></td>
+</tr>
+<tr><td>mass transfer flux, CEM, Water ions</td>
+<td><span class="formula"><i>J</i><span class="scripts"><sup class="script"><i>C</i></sup><sub class="script"><i>j</i></sub></span> = 0</span></td>
+<td><span class="formula"><i>j</i> ∈ <span class="stretchy">[</span>’<i>OH</i><sup> − </sup>’<span class="stretchy">]</span></span></td>
+</tr>
+<tr><td>mass transfer flux, AEM, Water ions</td>
+<td><span class="formula"><i>J</i><span class="scripts"><sup class="script"><i>C</i></sup><sub class="script"><i>j</i></sub></span> = 0</span></td>
+<td><span class="formula"><i>j</i> ∈ <span class="stretchy">[</span>’<i>H</i><sup> + </sup>’<span class="stretchy">]</span></span></td>
+</tr>
+<tr><td>mass transfer flux, AEM, Water ions</td>
+<td><span class="formula"><i>J</i><span class="scripts"><sup class="script"><i>C</i></sup><sub class="script"><i>j</i></sub></span> =  − <span class="fraction"><span class="ignored">(</span><span class="numerator"><i>i</i> − <i>i</i><sub><i>lim</i></sub></span><span class="ignored">)/(</span><span class="denominator"><i>z</i><sub><i>j</i></sub><i>F</i></span><span class="ignored">)</span></span></span></td>
+<td><span class="formula"><i>j</i> ∈ <span class="stretchy">[</span>’<i>OH</i><sup> − </sup>’<span class="stretchy">]</span></span></td>
+</tr>
+</tbody>
+</table>
+<p>Overcoming the limiting current corresponds to a potential barrier (<span class="formula"><i>U</i><sub><i>diss</i></sub></span>). This modifies the current voltage relationship as <span class="formula"><i>U</i> = <i>i</i><i>r</i><sub><i>tot</i></sub> + <i>U</i><sub><i>diss</i></sub></span>.</p>
+<p>Both the current durrent density and potential barrier must be specified, via <tt class="docutils literal">limiting_current_density_method_bpem =LimitingCurrentDensityMethod</tt> and <tt class="docutils literal">limiting_potential_method_bpem =LimitingpotentialMethod</tt> respectively, in the water splitting mode of operation. They can either be user inputs <tt class="docutils literal">InitialValue</tt>, with <tt class="docutils literal">limiting_current_density_data</tt> in <span class="formula"><i>A</i> ⁄ <i>m</i><sup>2</sup></span> and <tt class="docutils literal">limiting_potential_data</tt> in volts. There is also an option to have these critical quantities computed. For this <tt class="docutils literal">Empirical</tt> is chosen.</p>
+<p>The limiting current is computed as <span class="formula"><i>i</i><sub><i>lim</i></sub> = <i>D</i><i>F</i>(<i>C</i><sub><i>CEM</i></sub> + <i>C</i><sub><i>AEM</i></sub>)<sup>2</sup> ⁄ (<i>σ</i><i>δ</i>)</span>. The potential barrier calculation involves kinetics of water splitting. The rate of proton/hydroxide ion formation per unit volume is given as <span class="formula"><i>R</i><sub><i>H</i><sup> + </sup> ⁄ <i>OH</i><sup> − </sup></sub> = [<i>k</i><sub>2</sub>(0)<i>f</i>(<i>E</i>)<i>C</i><sub><i>H</i><sub>2</sub><i>O</i></sub> − <i>k</i><sub><i>r</i></sub><i>C</i><sub><i>H</i><sup> + </sup></sub><i>C</i><sub><i>OH</i><sup> − </sup></sub>]</span>. A majority of the production occurs within the small depletion region <span class="formula"><i>λ</i></span>, thus the flux is <span class="formula"><i>R</i><sub><i>H</i><sup> + </sup> ⁄ <i>OH</i><sup> − </sup></sub> ⁄ <i>λ</i></span>. When this flux is <span class="formula">0.1<i>i</i><sub><i>lim</i></sub></span> the barrier is assumed to be crossed, and the corresponding <span class="formula"><i>E</i> = <i>E</i><sub><i>crit</i></sub> = <i>U</i><sub><i>diss</i></sub><i>λ</i></span> determines the potential barrier.</p>
+<p>The quantities <span class="formula"><i>C</i><sub><i>H</i><sub>2</sub><i>O</i></sub>, <i>C</i><sub><i>H</i><sup> + </sup></sub>, <i>C</i><sub><i>OH</i><sup> − </sup></sub></span> are the water proton and hydroxyl concentration in <span class="formula"><i>mol</i><i>m</i><sup> − </sup>3</span> and are taken to be constants. <span class="formula"><i>f</i>(<i>E</i>)</span> is the second Wien effect driven enhancement of the dissociation rate under applied electric field. It requires as input temperature and relative permittivity (<span class="formula"><i>ϵ</i><sub><i>r</i></sub></span>). To close the model <span class="formula"><i>λ</i> = <i>E</i><sub><i>crit</i></sub><i>ϵ</i><sub>0</sub><i>ϵ</i><sub><i>r</i></sub> ⁄ (<i>F</i><i>σ</i>)</span></p>
+<table border="1" class="docutils">
+<caption><strong>Table 5.</strong> DOF for water splitting regime</caption>
+<colgroup>
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Description</th>
+<th class="head">Symbol</th>
+<th class="head">Variable Name</th>
+<th class="head">Index</th>
+<th class="head">Units</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>Diffusivity</td>
+<td><span class="formula"><i>D</i></span></td>
+<td>diffus_mass</td>
+<td>[bpem]</td>
+<td><span class="formula"><i>m</i><sup>2</sup><i>s</i><sup> − 1</sup></span></td>
+</tr>
+<tr><td>Salt concentration, AEM side</td>
+<td><span class="formula"><i>C</i><sub><i>AEM</i></sub></span></td>
+<td>salt_conc_aem</td>
+<td>[bpem]</td>
+<td><span class="formula"><i>mol</i><i>m</i><sup> − </sup>3</span></td>
+</tr>
+<tr><td>Salt concentration, CEM side</td>
+<td><span class="formula"><i>C</i><sub><i>CEM</i></sub></span></td>
+<td>salt_conc_cem</td>
+<td>[bpem]</td>
+<td><span class="formula"><i>mol</i><i>m</i><sup> − </sup>3</span></td>
+</tr>
+<tr><td>Membrane Fixed charge</td>
+<td><span class="formula"><i>σ</i></span></td>
+<td>membrane_fixed_charge</td>
+<td>[bpem]</td>
+<td><span class="formula"><i>mol</i><i>m</i><sup> − </sup>3</span></td>
+</tr>
+<tr><td>Dissociation rate constant, zero electric field</td>
+<td><span class="formula"><i>k</i><sub>2</sub>(0)</span></td>
+<td>kd_zero</td>
+<td>[bpem]</td>
+<td><span class="formula"><i>s</i><sup> − </sup>1</span></td>
+</tr>
+<tr><td>Recombination rate constant</td>
+<td><span class="formula"><i>k</i><sub><i>r</i></sub></span></td>
+<td>k_r</td>
+<td>[bpem]</td>
+<td><span class="formula"><i>L</i><sup>1</sup><i>mol</i><sup> − </sup>1<i>s</i><sup> − </sup>1</span></td>
+</tr>
+<tr><td>Relative permittivity</td>
+<td><span class="formula"><i>ϵ</i><sub><i>r</i></sub></span></td>
+<td>relative_permittivity</td>
+<td>[bpem]</td>
+<td>Non-dimensional</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="frictional-pressure-drop">
+<h2>Frictional pressure drop</h2>
+<p>This model can optionally calculate pressured drops along the flow path in the diluate and concentrate channels through config <tt class="docutils literal">has_pressure_change</tt> and <tt class="docutils literal">pressure_drop_method</tt>.  Under the assumption of identical diluate and concentrate channels and starting flow rates, the flow velocities in the two channels are approximated equal and invariant over the channel length when calculating the frictional pressure drops. This approximation is based on the evaluation that the actual velocity variation over the channel length caused by water mass transfer across the consecutive channels leads to negligible errors as compared to the uncertainties carried by the frictional pressure method itself. <strong>Table 7</strong> gives essential equations to simulate the pressure drop. Among extensive literatures using these equations, a good reference paper is by Wright et. al., 2018 (<em>References</em>).</p>
+<table border="1" class="docutils">
+<caption><strong>Table 7</strong> Essential equations supporting the pressure drop calculation</caption>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Description</th>
+<th class="head">Equation</th>
+<th class="head">Condition</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>Frictional pressure drop, Darcy_Weisbach</td>
+<td><span class="formula"><i>p</i><sub><i>L</i></sub> = <i>f</i><span class="fraction"><span class="ignored">(</span><span class="numerator"><i>ρ</i><i>v</i><sup>2</sup></span><span class="ignored">)/(</span><span class="denominator">2<i>d</i><sub><i>H</i></sub></span><span class="ignored">)</span></span></span> <sup>1</sup></td>
+<td><cite>has_pressure_change == True</cite> and <cite>pressure_drop_method == PressureDropMethod.Darcy_Weisbach</cite></td>
+</tr>
+<tr><td>&nbsp;</td>
+<td><span class="formula"><i>p</i><sub><i>L</i></sub> = </span> user-input constant</td>
+<td><cite>has_pressure_change == True</cite> and <cite>pressure_drop_method == PressureDropMethod.Experimental</cite></td>
+</tr>
+<tr><td>Hydraulic diameter</td>
+<td><span class="formula"><i>d</i><sub><i>H</i></sub> = <span class="fraction"><span class="ignored">(</span><span class="numerator">2<i>db</i>(1 − <i>ϵ</i>)</span><span class="ignored">)/(</span><span class="denominator"><i>d</i> + <i>b</i></span><span class="ignored">)</span></span></span></td>
+<td><cite>hydraulic_diameter_method == HydraulicDiameterMethod.conventional</cite></td>
+</tr>
+<tr><td>&nbsp;</td>
+<td><span class="formula"><i>d</i><sub><i>H</i></sub> = <span class="fraction"><span class="ignored">(</span><span class="numerator">4<i>ϵ</i></span><span class="ignored">)/(</span><span class="denominator"><span class="fraction"><span class="ignored">(</span><span class="numerator">2</span><span class="ignored">)/(</span><span class="denominator"><i>h</i></span><span class="ignored">)</span></span> + (1 − <i>ϵ</i>)<i>S</i><sub><i>v</i>, <i>sp</i></sub></span><span class="ignored">)</span></span></span></td>
+<td><cite>hydraulic_diameter_method == HydraulicDiameterMethod.spacer_specific_area_known</cite></td>
+</tr>
+<tr><td>Renold number</td>
+<td><span class="formula"><i>Re</i> = <span class="fraction"><span class="ignored">(</span><span class="numerator"><i>ρ</i><i>v</i><i>d</i><sub><i>H</i></sub></span><span class="ignored">)/(</span><span class="denominator"><i>μ</i></span><span class="ignored">)</span></span></span></td>
+<td><cite>has_pressure_change == True</cite> or <cite>limiting_current_density_method == LimitingCurrentDensityMethod.Theoretical</cite></td>
+</tr>
+<tr><td>Schmidt number</td>
+<td><span class="formula"><i>Sc</i> = <span class="fraction"><span class="ignored">(</span><span class="numerator"><i>μ</i></span><span class="ignored">)/(</span><span class="denominator"><i>ρ</i><i>D</i><sub><i>b</i></sub></span><span class="ignored">)</span></span></span></td>
+<td><cite>has_pressure_change == True</cite> or <cite>limiting_current_density_method == LimitingCurrentDensityMethod.Theoretical</cite></td>
+</tr>
+<tr><td>Sherwood number</td>
+<td><span class="formula"><i>Sh</i> = 0.29<i>Re</i><sup>0.5</sup><i>Sc</i><sup>0.33</sup></span></td>
+<td><cite>has_pressure_change == True</cite> or <cite>limiting_current_density_method == LimitingCurrentDensityMethod.Theoretical</cite></td>
+</tr>
+<tr><td>Darcy's frictional factor</td>
+<td><span class="formula"><i>f</i> = 4×50.6<i>ϵ</i><sup> − 7.06</sup><i>Re</i><sup> − 1</sup></span></td>
+<td><cite>friction_factor_method == FrictionFactorMethod.Gurreri</cite></td>
+</tr>
+<tr><td>&nbsp;</td>
+<td><span class="formula"><i>f</i> = 4×9.6<i>ϵ</i><sup> − 1</sup><i>Re</i><sup> − 0.5</sup></span></td>
+<td><cite>friction_factor_method == FrictionFactorMethod.Kuroda</cite></td>
+</tr>
+<tr><td>Pressure balance</td>
+<td><span class="formula"><i>p</i><sub><i>in</i></sub> − <i>p</i><sub><i>L</i></sub><i>l</i> = <i>p</i><sub><i>out</i></sub></span></td>
+<td><cite>has_pressure_change == True</cite></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note</strong></p>
+<blockquote>
+<sup>1</sup> We assumed a constant linear velocity (in the cell length direction), <span class="formula"><i>v</i></span>, in both channels and along the flow path. This <span class="formula"><i>v</i></span> is calculated based on the average of inlet and outlet volumetric flow rate.</blockquote>
+</div>
+</div>
+<div class="section" id="nomenclature">
+<h1>Nomenclature</h1>
+<table border="1" class="docutils">
+<caption><strong>Table 8.</strong> Nomenclature</caption>
+<colgroup>
+<col width="25%" />
+<col width="50%" />
+<col width="25%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Symbol</th>
+<th class="head">Description</th>
+<th class="head">Unit</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><strong>Parameters</strong></td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td><span class="formula"><i>ρ</i><sub><i>w</i></sub></span></td>
+<td>Mass density of water</td>
+<td><span class="formula"><i>kg</i> <i>m</i><sup> − 3</sup></span></td>
+</tr>
+<tr><td><span class="formula"><i>M</i><sub><i>w</i></sub></span></td>
+<td>Molecular weight of water</td>
+<td><span class="formula"><i>kg</i> <i>mol</i><sup> − 1</sup></span></td>
+</tr>
+<tr><td><strong>Variables and Parameters</strong></td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td><span class="formula"><i>N</i></span></td>
+<td>Molar flow rate of a component</td>
+<td><span class="formula"><i>mol</i> <i>s</i><sup> − 1</sup></span></td>
+</tr>
+<tr><td><span class="formula"><i>J</i></span></td>
+<td>Molar flux of a component</td>
+<td><span class="formula"><i>mol</i> <i>m</i><sup> − 2</sup><i>s</i><sup> − 1</sup></span></td>
+</tr>
+<tr><td><span class="formula"><i>b</i></span></td>
+<td>Cell/membrane width</td>
+<td><span class="formula"><i>m</i></span></td>
+</tr>
+<tr><td><span class="formula"><i>l</i></span></td>
+<td>Cell/membrane length</td>
+<td><span class="formula"><i>m</i></span></td>
+</tr>
+<tr><td><span class="formula"><i>t</i></span></td>
+<td>Ion transport number</td>
+<td>dimensionless</td>
+</tr>
+<tr><td><span class="formula"><i>I</i></span></td>
+<td>Current</td>
+<td><span class="formula"><i>A</i></span></td>
+</tr>
+<tr><td><span class="formula"><i>i</i></span></td>
+<td>Current density</td>
+<td><span class="formula"><i>A</i><i>m</i><sup> − 2</sup></span></td>
+</tr>
+<tr><td><span class="formula"><i>U</i></span></td>
+<td>Voltage over a stack</td>
+<td><span class="formula"><i>V</i></span></td>
+</tr>
+<tr><td><span class="formula"><i>n</i></span></td>
+<td>Cell pair number</td>
+<td>dimensionless</td>
+</tr>
+<tr><td><span class="formula"><i>ξ</i></span></td>
+<td>Current utilization coefficient (including ion diffusion and water electroosmosis)</td>
+<td>dimensionless</td>
+</tr>
+<tr><td><span class="formula"><i>z</i></span></td>
+<td>Ion charge</td>
+<td>dimensionless</td>
+</tr>
+<tr><td><span class="formula"><i>F</i></span></td>
+<td>Faraday constant</td>
+<td><span class="formula"><i>C</i> <i>mol</i><sup> − 1</sup></span></td>
+</tr>
+<tr><td><span class="formula"><i>ϵ</i><sub>0</sub></span></td>
+<td>permittivity of free space</td>
+<td><span class="formula"><i>C</i> <i>mol</i><sup> − 1</sup></span></td>
+</tr>
+<tr><td><span class="formula"><i>D</i></span></td>
+<td>Ion Diffusivity</td>
+<td><span class="formula"><i>F</i><i>m</i><sup> − </sup>1</span></td>
+</tr>
+<tr><td><span class="formula"><i>δ</i></span></td>
+<td>Membrane thickness</td>
+<td><span class="formula"><i>m</i></span></td>
+</tr>
+<tr><td><span class="formula"><i>c</i></span></td>
+<td>Solute concentration</td>
+<td><span class="formula"><i>mol</i> <i>m</i><sup> − 3</sup></span></td>
+</tr>
+<tr><td><span class="formula"><i>t</i><sub><i>w</i></sub></span></td>
+<td>Water electroosmotic transport number</td>
+<td>dimensionless</td>
+</tr>
+<tr><td><span class="formula"><i>L</i></span></td>
+<td>Water permeability (osmosis)</td>
+<td><span class="formula"><i>ms</i><sup> − 1</sup><i>Pa</i><sup> − 1</sup></span></td>
+</tr>
+<tr><td><span class="formula"><i>p</i><sub><i>osm</i></sub></span></td>
+<td>Osmotic pressure</td>
+<td><span class="formula"><i>Pa</i></span></td>
+</tr>
+<tr><td><span class="formula"><i>r</i><sub><i>tot</i></sub></span></td>
+<td>Total areal resistance</td>
+<td><span class="formula">Ω<i>m</i><sup>2</sup></span></td>
+</tr>
+<tr><td><span class="formula"><i>r</i></span></td>
+<td>Membrane areal resistance</td>
+<td><span class="formula">Ω<i>m</i><sup>2</sup></span></td>
+</tr>
+<tr><td><span class="formula"><i>r</i><sub><i>el</i></sub></span></td>
+<td>Electrode areal resistance</td>
+<td><span class="formula">Ω<i>m</i><sup>2</sup></span></td>
+</tr>
+<tr><td><span class="formula"><i>d</i></span></td>
+<td>Spacer thickness</td>
+<td><span class="formula"><i>m</i></span></td>
+</tr>
+<tr><td><span class="formula"><i>η</i></span></td>
+<td>Current efficiency for desalination</td>
+<td>dimensionless</td>
+</tr>
+<tr><td><span class="formula"><i>P</i></span></td>
+<td>Power consumption</td>
+<td><span class="formula"><i>W</i></span></td>
+</tr>
+<tr><td><span class="formula"><i>P</i><sub><i>Q</i></sub></span></td>
+<td>Specific power consumption</td>
+<td><span class="formula"><i>kW</i> <i>h</i> <i>m</i><sup> − 3</sup></span></td>
+</tr>
+<tr><td><span class="formula"><i>Q</i></span></td>
+<td>Volume flow rate</td>
+<td><span class="formula"><i>m</i><sup>3</sup><i>s</i><sup> − 1</sup></span></td>
+</tr>
+<tr><td><span class="formula"><i>ϕ</i><span class="scripts"><sup class="script"><i>ohm</i></sup><sub class="script"><i>d</i></sub></span></span></td>
+<td>Ohmic potential across a Nernst diffusion layer</td>
+<td><span class="formula"><i>V</i></span></td>
+</tr>
+<tr><td><strong>Subscripts and superscripts</strong></td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td><span class="formula"><i>j</i></span></td>
+<td>Component index</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td><span class="formula"><i>in</i></span></td>
+<td>Inlet</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td><span class="formula"><i>out</i></span></td>
+<td>Outlet</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td><span class="formula"><i>cem</i></span></td>
+<td>Cation exchange side of bipolar membrane</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td><span class="formula"><i>aem</i></span></td>
+<td>Anion exchange side of bipolar membrane</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="references">
+<h1>References</h1>
+<p>Strathmann, H. (2010). Electrodialysis, a mature technology with a multitude of new applications.
+Desalination, 264(3), 268-288.</p>
+<p>Strathmann, H. (2004). Ion-exchange membrane separation processes. Elsevier. Ch. 4.</p>
+<p>Campione, A., Cipollina, A., Bogle, I. D. L., Gurreri, L., Tamburini, A., Tedesco, M., &amp; Micale, G. (2019).
+A hierarchical model for novel schemes of electrodialysis desalination. Desalination, 465, 79-93.</p>
+<p>Campione, A., Gurreri, L., Ciofalo, M., Micale, G., Tamburini, A., &amp; Cipollina, A. (2018).
+Electrodialysis for water desalination: A critical assessment of recent developments on process
+fundamentals, models and applications. Desalination, 434, 121-160.</p>
+<p>Spiegler, K. S. (1971). Polarization at ion exchange membrane-solution interfaces. Desalination, 9(4), 367-385.</p>
+<p>Wright, N. C., Shah, S. R., &amp; Amrose, S. E. (2018).
+A robust model of brackish water electrodialysis desalination with experimental comparison at different size scales.
+Desalination, 443, 27-43.</p>
+</div>
+<div class="system-messages section">
+<h1>Docutils System Messages</h1>
+<div class="system-message" id="system-message-2">
+<p class="system-message-title">System Message: ERROR/3 (<tt class="docutils">C:/Users/jjd/PycharmProjects/Watertap_development/watertap/Biploar_electrodialysis_0D.rst</tt>, line 1); <em><a href="#problematic-2">backlink</a></em></p>
+Unknown target name: &quot;oh&quot;.</div>
+<div class="system-message" id="system-message-3">
+<p class="system-message-title">System Message: ERROR/3 (<tt class="docutils">C:/Users/jjd/PycharmProjects/Watertap_development/watertap/Biploar_electrodialysis_0D.rst</tt>, line 1); <em><a href="#problematic-3">backlink</a></em></p>
+Unknown target name: &quot;oh&quot;.</div>
+<div class="system-message" id="system-message-4">
+<p class="system-message-title">System Message: ERROR/3 (<tt class="docutils">C:/Users/jjd/PycharmProjects/Watertap_development/watertap/Biploar_electrodialysis_0D.rst</tt>, line 1); <em><a href="#problematic-4">backlink</a></em></p>
+Unknown target name: &quot;oh&quot;.</div>
+<div class="system-message" id="system-message-5">
+<p class="system-message-title">System Message: ERROR/3 (<tt class="docutils">C:/Users/jjd/PycharmProjects/Watertap_development/watertap/Biploar_electrodialysis_0D.rst</tt>, line 1); <em><a href="#problematic-5">backlink</a></em></p>
+Unknown target name: &quot;oh&quot;.</div>
+<div class="system-message" id="system-message-6">
+<p class="system-message-title">System Message: ERROR/3 (<tt class="docutils">C:/Users/jjd/PycharmProjects/Watertap_development/watertap/Biploar_electrodialysis_0D.rst</tt>, line 1); <em><a href="#problematic-6">backlink</a></em></p>
+Unknown target name: &quot;oh&quot;.</div>
+</div>
+</div>
+</body>
+</html>

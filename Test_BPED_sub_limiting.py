@@ -13,12 +13,13 @@ from pyomo.environ import (
     Param,
     Var,
     Constraint,
+    units as pyunits,
 )
 
 # import simple_prop_pack as props
-from electrodialysis_bmed import (
+from electrodialysis_bipolar import (
     ElectricalOperationMode,
-    Electrodialysis0D,
+    BiPolarElectrodialysis0D,
     PressureDropMethod,
     FrictionFactorMethod,
     HydraulicDiameterMethod,
@@ -35,73 +36,74 @@ m = ConcreteModel()
 m.fs = FlowsheetBlock(dynamic=False)
 # attach property package
 
-# "solute_list": ["Na_+", "Cl_-", "C_+", "A_-"],
-# "mw_data": {"H2O": 18e-3, "Na_+": 23e-3, "Cl_-": 35.5e-3, "C_+": 23e-3, "A_-": 35.5e-3},
-# "elec_mobility_data": {("Liq", "Na_+"): 5.19e-8, ("Liq", "Cl_-"): 7.92e-8, ("Liq", "C_+"): 5.19e-8,
-#                        ("Liq", "A_-"): 7.92e-8},
-# "charge": {"Na_+": 1, "Cl_-": -1, "C_+": 1, "A_-": -1},
+# "solute_list": ["Na_+", "Cl_-", "H_+", "OH_-"],
+# "mw_data": {"H2O": 18e-3, "Na_+": 23e-3, "Cl_-": 35.5e-3, "H_+": 23e-3, "OH_-": 35.5e-3},
+# "elec_mobility_data": {("Liq", "Na_+"): 5.19e-8, ("Liq", "Cl_-"): 7.92e-8, ("Liq", "H_+"): 5.19e-8,
+#                        ("Liq", "OH_-"): 7.92e-8},
+# "charge": {"Na_+": 1, "Cl_-": -1, "H_+": 1, "OH_-": -1},
 
-# "solute_list": ["Na_+", "Cl_-", "C_+", "A_-"],
-# "mw_data": {"H2O": 18e-3, "Na_+": 23e-3, "Cl_-": 35.5e-3, "C_+": 1e-3, "A_-": 17.0e-3},
-# "elec_mobility_data": {("Liq", "Na_+"): 5.19e-8, ("Liq", "Cl_-"): 7.92e-8, ("Liq", "C_+"): 36.23e-8,
-#                        ("Liq", "A_-"): 20.64e-8},
-# "charge": {"Na_+": 1, "Cl_-": -1, "C_+": 1, "A_-": -1},
+# "solute_list": ["Na_+", "Cl_-", "H_+", "OH_-"],
+# "mw_data": {"H2O": 18e-3, "Na_+": 23e-3, "Cl_-": 35.5e-3, "H_+": 1e-3, "OH_-": 17.0e-3},
+# "elec_mobility_data": {("Liq", "Na_+"): 5.19e-8, ("Liq", "Cl_-"): 7.92e-8, ("Liq", "H_+"): 36.23e-8,
+#                        ("Liq", "OH_-"): 20.64e-8},
+# "charge": {"Na_+": 1, "Cl_-": -1, "H_+": 1, "OH_-": -1},
 
-# "solute_list": ["Na_+", "Cl_-", "C_+", "A_-"],
-# "mw_data": {"H2O": 18e-3, "Na_+": 23e-3, "Cl_-": 35.5e-3, "C_+": 23e-3, "A_-": 35.5e-3},
-# "elec_mobility_data": {("Liq", "Na_+"): 5.19e-8, ("Liq", "Cl_-"): 7.92e-8, ("Liq", "C_+"): 5.19e-8,
-#                        ("Liq", "A_-"): 7.92e-8},
-# "charge": {"Na_+": 1, "Cl_-": -1, "C_+": 1, "A_-": -1},
+# "solute_list": ["Na_+", "Cl_-", "H_+", "OH_-"],
+# "mw_data": {"H2O": 18e-3, "Na_+": 23e-3, "Cl_-": 35.5e-3, "H_+": 23e-3, "OH_-": 35.5e-3},
+# "elec_mobility_data": {("Liq", "Na_+"): 5.19e-8, ("Liq", "Cl_-"): 7.92e-8, ("Liq", "H_+"): 5.19e-8,
+#                        ("Liq", "OH_-"): 7.92e-8},
+# "charge": {"Na_+": 1, "Cl_-": -1, "H_+": 1, "OH_-": -1},
 
-# "solute_list": ["Na_+", "Cl_-", "C_+", "A_-"],
-# "mw_data": {"H2O": 18e-3, "Na_+": 23e-3, "Cl_-": 35.5e-3, "C_+": 23e-3 / 1, "A_-": 35.5e-3 / 1},
+# "solute_list": ["Na_+", "Cl_-", "H_+", "OH_-"],
+# "mw_data": {"H2O": 18e-3, "Na_+": 23e-3, "Cl_-": 35.5e-3, "H_+": 23e-3 / 1, "OH_-": 35.5e-3 / 1},
 # "elec_mobility_data": {("Liq", "Na_+"): 5.19e-8, ("Liq", "Cl_-"): 7.92e-8,
-#                        ("Liq", "C_+"): 5.19e-8 * 1, ("Liq", "A_-"): 7.92e-8 * 1},
-# "charge": {"Na_+": 1, "Cl_-": -1, "C_+": 1, "A_-": -1},
+#                        ("Liq", "H_+"): 5.19e-8 * 1, ("Liq", "OH_-"): 7.92e-8 * 1},
+# "charge": {"Na_+": 1, "Cl_-": -1, "H_+": 1, "OH_-": -1},
 # "diffusivity_data": {("Liq", "Na_+"): 1.33e-9, ("Liq", "Cl_-"): 2.03e-9,
-#                      ("Liq", "C_+"): 1.33e-9, ("Liq", "A_-"): 2.03e-9}
+#                      ("Liq", "H_+"): 1.33e-9, ("Liq", "OH_-"): 2.03e-9}
 
-# "solute_list": ["Na_+", "Cl_-", "C_+", "A_-"],
-# "mw_data": {"H2O": 18e-3, "Na_+": 23e-3, "Cl_-": 35.5e-3, "C_+": 1e-3, "A_-": 17.0e-3},
+# "solute_list": ["Na_+", "Cl_-", "H_+", "OH_-"],
+# "mw_data": {"H2O": 18e-3, "Na_+": 23e-3, "Cl_-": 35.5e-3, "H_+": 1e-3, "OH_-": 17.0e-3},
 # "elec_mobility_data": {("Liq", "Na_+"): 5.19e-8, ("Liq", "Cl_-"): 7.92e-8,
-#                        ("Liq", "C_+"): 36.23e-8, ("Liq", "A_-"): 20.64e-8},
-# "charge": {"Na_+": 1, "Cl_-": -1, "C_+": 1, "A_-": -1},
+#                        ("Liq", "H_+"): 36.23e-8, ("Liq", "OH_-"): 20.64e-8},
+# "charge": {"Na_+": 1, "Cl_-": -1, "H_+": 1, "OH_-": -1},
 # "diffusivity_data": {("Liq", "Na_+"): 1.33e-9, ("Liq", "Cl_-"): 2.03e-9,
-#                      ("Liq", "C_+"): 9.31e-9, ("Liq", "A_-"): 5.27e-9}
+#                      ("Liq", "H_+"): 9.31e-9, ("Liq", "OH_-"): 5.27e-9}
 
+factor = 1e0
 
 ion_dict = {
-    "solute_list": ["Na_+", "Cl_-", "C_+", "A_-"],
+    "solute_list": ["Na_+", "Cl_-", "H_+", "OH_-"],
     "mw_data": {
         "H2O": 18e-3,
         "Na_+": 23e-3,
         "Cl_-": 35.5e-3,
-        "C_+": 1e-3,
-        "A_-": 17.0e-3,
+        "H_+": 1e-3,
+        "OH_-": 17.0e-3,
     },
     "elec_mobility_data": {
         ("Liq", "Na_+"): 5.19e-8,
         ("Liq", "Cl_-"): 7.92e-8,
-        ("Liq", "C_+"): 36.23e-8,
-        ("Liq", "A_-"): 20.64e-8,
+        ("Liq", "H_+"): 36.23e-8,
+        ("Liq", "OH_-"): 20.64e-8,
     },
-    "charge": {"Na_+": 1, "Cl_-": -1, "C_+": 1, "A_-": -1},
+    "charge": {"Na_+": 1, "Cl_-": -1, "H_+": 1, "OH_-": -1},
     "diffusivity_data": {
         ("Liq", "Na_+"): 1.33e-9,
         ("Liq", "Cl_-"): 2.03e-9,
-        ("Liq", "C_+"): 9.31e-9,
-        ("Liq", "A_-"): 5.27e-9,
+        ("Liq", "H_+"): 9.31e-9,
+        ("Liq", "OH_-"): 5.27e-9,
     },
 }
 m.fs.properties = MCASParameterBlock(**ion_dict)
-m.fs.unit = Electrodialysis0D(
+m.fs.unit = BiPolarElectrodialysis0D(
     property_package=m.fs.properties,
     operation_mode="Constant_Current",
-    Operation_method_bpem="Over_limiting",
-    limiting_current_density_method_bpem=LimitingCurrentDensityMethod.InitialValue,
-    limiting_current_density_data=1e0,
+    Operation_method_bpem="Sub_limiting",
+    limiting_current_density_method_bpem=LimitingCurrentDensityMethod.Empirical,
+    limiting_current_density_data=factor / 2,
     limiting_potential_method_bpem=LimitingpotentialMethod.Empirical,
-    limiting_potential_data=3.6,
+    limiting_potential_data=0.5,
 )
 # build a state block, must specify a time which by convention for steady state models is just 0
 # m.fs.stream = m.fs.properties.build_state_block([0], default={})
@@ -120,7 +122,7 @@ print("config length = ", len(m.fs.unit.config))
 m.fs.unit.water_trans_number_membrane["bpem"].fix((5.8 + 4.3) / 2)
 # m.fs.unit.water_trans_number_membrane["aem"].fix(4.3)
 m.fs.unit.water_permeability_membrane["bpem"].fix((2.16e-14 + 1.75e-14) / 2)
-m.fs.unit.current.fix(2)
+m.fs.unit.current.fix(3)
 m.fs.unit.electrodes_resistance.fix(0)
 m.fs.unit.cell_pair_num.fix(10)
 m.fs.unit.current_utilization.fix(1)
@@ -129,20 +131,22 @@ m.fs.unit.membrane_areal_resistance["bpem"].fix((1.89e-4 + 1.77e-4) / 2)
 m.fs.unit.cell_width.fix(0.1)
 m.fs.unit.cell_length.fix(0.79)
 m.fs.unit.membrane_thickness["bpem"].fix(1.3e-4)
-m.fs.unit.membrane_fixed_charge["bpem"].fix(1.5e3)
-m.fs.unit.diffus_mass["bpem"].fix(1e-9)
+# m.fs.unit.membrane_fixed_charge["bpem"].fix(1.5e3)
+# m.fs.unit.diffus_mass["bpem"].fix((2.03 + 1.96) * 10 ** -9 /2 )
+# m.fs.unit.salt_conc_aem["bpem"].fix(500)
+# m.fs.unit.salt_conc_cem["bpem"].fix(500)
 # m.fs.unit.membrane_thickness["bpem"].fix(1.3e-4)
 m.fs.unit.solute_diffusivity_membrane["bpem", "Na_+"].fix((1.8e-10 + 1.25e-10) / 2)
 m.fs.unit.solute_diffusivity_membrane["bpem", "Cl_-"].fix((1.8e-10 + 1.25e-10) / 2)
-m.fs.unit.solute_diffusivity_membrane["bpem", "C_+"].fix((1.8e-10 + 1.25e-10) / 2)
-m.fs.unit.solute_diffusivity_membrane["bpem", "A_-"].fix((1.8e-10 + 1.25e-10) / 2)
+m.fs.unit.solute_diffusivity_membrane["bpem", "H_+"].fix((1.8e-10 + 1.25e-10) / 2)
+m.fs.unit.solute_diffusivity_membrane["bpem", "OH_-"].fix((1.8e-10 + 1.25e-10) / 2)
 m.fs.unit.ion_trans_number_membrane["bpem", "Na_+"].fix(0.5)
 m.fs.unit.ion_trans_number_membrane["bpem", "Cl_-"].fix(0.5)
-m.fs.unit.ion_trans_number_membrane["bpem", "C_+"].fix(0.1)
-m.fs.unit.ion_trans_number_membrane["bpem", "A_-"].fix(0.1)
-m.fs.unit.kr["bpem"].fix(1.33 * 10**11)
-m.fs.unit.kd_zero["bpem"].fix(2 * 10**-5)
-m.fs.unit.relative_permittivity["bpem"].fix(20)
+m.fs.unit.ion_trans_number_membrane["bpem", "H_+"].fix(0.1)
+m.fs.unit.ion_trans_number_membrane["bpem", "OH_-"].fix(0.1)
+# m.fs.unit.kr["bpem"].fix(1.33 * 10**11)
+# m.fs.unit.kd_zero["bpem"].fix(2 * 10**-5)
+# m.fs.unit.relative_permittivity["bpem"].fix(20)
 
 # assert (
 #         sum(
@@ -168,18 +172,22 @@ m.fs.unit.relative_permittivity["bpem"].fix(20)
 
 m.fs.unit.inlet_aem_side.pressure.fix(101325)
 m.fs.unit.inlet_aem_side.temperature.fix(298.15)
-m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "H2O"].fix(2.40e-1)
-m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "Na_+"].fix(7.38e-4)
-m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "Cl_-"].fix(7.38e-4)
-m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "C_+"].fix(7.38e-4)
-m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "A_-"].fix(7.38e-4)
+m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "H2O"].fix(2.40e-1 * factor)
+m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "Na_+"].fix(7.38e-4 * factor)
+m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "Cl_-"].fix(7.38e-4 * factor)
+# m.fs.unit.inlet_aem_side.conc_mol_phase_comp[0, "Liq", "Na_+"].fix(500)
+# m.fs.unit.inlet_aem_side.conc_mol_phase_comp[0, "Liq", "Cl_-"].fix(500)
+m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "H_+"].fix(7.38e-4 * factor)
+m.fs.unit.inlet_aem_side.flow_mol_phase_comp[0, "Liq", "OH_-"].fix(7.38e-4 * factor)
 m.fs.unit.inlet_cem_side.pressure.fix(101325)
 m.fs.unit.inlet_cem_side.temperature.fix(298.15)
-m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "H2O"].fix(2.40e-1)
-m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "Na_+"].fix(7.38e-4)
-m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "Cl_-"].fix(7.38e-4)
-m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "C_+"].fix(7.38e-4)
-m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "A_-"].fix(7.38e-4)
+m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "H2O"].fix(2.40e-1 * factor)
+m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "Na_+"].fix(7.38e-4 * factor)
+m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "Cl_-"].fix(7.38e-4 * factor)
+# m.fs.unit.inlet_cem_side.conc_mol_phase_comp[0, "Liq", "Na_+"].fix(500)
+# m.fs.unit.inlet_cem_side.conc_mol_phase_comp[0, "Liq", "Cl_-"].fix(500)
+m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "H_+"].fix(7.38e-4 * factor)
+m.fs.unit.inlet_cem_side.flow_mol_phase_comp[0, "Liq", "OH_-"].fix(7.38e-4 * factor)
 m.fs.unit.spacer_porosity.fix(1)
 # limiting_current_density_method=LimitingCurrentDensityMethod.Theoretical
 print("\n---third display---")
@@ -190,11 +198,23 @@ assert degrees_of_freedom(m) == 0
 # print("24601: Degrees of freedom = ", degrees_of_freedom(m))
 print("config length = ", len(m.fs.unit.config))
 
-m.fs.properties.set_default_scaling("flow_mol_phase_comp", 1e1, index=("Liq", "H2O"))
-m.fs.properties.set_default_scaling("flow_mol_phase_comp", 1e3, index=("Liq", "Na_+"))
-m.fs.properties.set_default_scaling("flow_mol_phase_comp", 1e3, index=("Liq", "Cl_-"))
-m.fs.properties.set_default_scaling("flow_mol_phase_comp", 1e3, index=("Liq", "C_+"))
-m.fs.properties.set_default_scaling("flow_mol_phase_comp", 1e3, index=("Liq", "A_-"))
+m.fs.properties.set_default_scaling(
+    "flow_mol_phase_comp", 1e2 * factor**-1, index=("Liq", "H2O")
+)
+m.fs.properties.set_default_scaling(
+    "flow_mol_phase_comp", 1e3 * factor**-1, index=("Liq", "Na_+")
+)
+m.fs.properties.set_default_scaling(
+    "flow_mol_phase_comp", 1e3 * factor**-1, index=("Liq", "Cl_-")
+)
+# m.fs.properties.set_default_scaling("conc_mol_phase_comp", 2e-3, index=("Liq", "Na_+"))
+# m.fs.properties.set_default_scaling("conc_mol_phase_comp", 2e-3, index=("Liq", "Cl_-"))
+m.fs.properties.set_default_scaling(
+    "flow_mol_phase_comp", 1e3 * factor**-1, index=("Liq", "H_+")
+)
+m.fs.properties.set_default_scaling(
+    "flow_mol_phase_comp", 1e3 * factor**-1, index=("Liq", "OH_-")
+)
 # print("420")
 iscale.calculate_scaling_factors(m.fs)
 # print("69")
@@ -202,13 +222,14 @@ initialization_tester(m)
 badly_scaled_var_values = {
     var.name: val for (var, val) in iscale.badly_scaled_var_generator(m)
 }
-# assert not badly_scaled_var_values
+print("badly_scaled_var_values =", badly_scaled_var_values)
+assert not badly_scaled_var_values
 # check to make sure DOF does not change
 assert degrees_of_freedom(m) == 0
 # print("24601")
 # m.fs.unit.spacer_porosity.unfix
-results = solver.solve(m, tee=True)
-# assert_optimal_termination(results)
+results = solver.solve(m)
+assert_optimal_termination(results)
 
 print("\n---fourth display---")
 m.fs.unit.display()
@@ -218,6 +239,7 @@ print(m.fs.unit.elec_migration_flux_out.display())
 print(m.fs.unit.aem_side.mass_transfer_term.display())
 print(m.fs.unit.current_dens_lim_bpem.display())
 print(m.fs.unit.potential_lim_bpem.display())
+
 
 # m.fs.stream[0].display()
 #
